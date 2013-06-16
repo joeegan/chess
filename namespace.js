@@ -1,3 +1,3 @@
 (function(){
-   window.C = {};
+   window.Chess = {};
 })();
