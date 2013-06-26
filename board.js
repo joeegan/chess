@@ -27,8 +27,14 @@
       for (var i=0; i<Board.SQUARES_PER_ROW; i++) {
          pos = this.positions[Board.ALPHABET[i]+2];
          this.place(Board.pieces.white.pawn, pos);
+         pos = this.positions[Board.ALPHABET[i]+(Board.SQUARES_PER_ROW-1)];
+         this.place(Board.pieces.black.pawn, pos);
       }
-   }
+      for (var i=0; i<Board.PIECE_ORDER.length; i++) {
+         this.place(Board.pieces.white[Board.PIECE_ORDER[i]], this.positions[Board.ALPHABET[i] + 1]);
+         this.place(Board.pieces.black[Board.PIECE_ORDER[i]], this.positions[Board.ALPHABET[i] + Board.SQUARES_PER_ROW]);
+      }
+   };
 
    Board.prototype.place = function(piece, pos) {
       this.ctx.fillStyle = "blue";
@@ -46,9 +52,9 @@
             // resolver
             if (y % 2 == 0 && x % 2 !== 0
                || y % 2 !== 0 && x % 2 == 0) {
-               this.ctx.fillStyle = Board.LIGHT_SQUARE_COLOR;
-            } else {
                this.ctx.fillStyle = Board.DARK_SQUARE_COLOR;
+            } else {
+               this.ctx.fillStyle = Board.LIGHT_SQUARE_COLOR;
             }
             this.ctx.lineWidth = 1;
             this.ctx.fillRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
@@ -60,15 +66,16 @@
    };
 
    Board.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+   Board.PIECE_ORDER = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
 
    Board.pieces = {
       black: {
-         pawn: '&#9823;',
-         rook: '&#9820;',
-         knight: '&#9822;',
-         bishop: '&#9821;',
-         queen: '&#9819 ',
-         king: '&#9818;'
+         pawn: '\u265F',
+         rook: '\u265C',
+         knight: '\u265E',
+         bishop: '\u265D',
+         queen: '\u265B',
+         king: '\u265A'
       },
       white: {
          pawn: '\u2659',
