@@ -13,29 +13,32 @@ Board.prototype.initialiseEvents = function(){
 Board.prototype.addClickHandlersToSquares = function(){
    var elemLeft = this.canvas.offsetLeft,
       elemTop = this.canvas.offsetTop,
-      elements = [];
+      squares = [];
 
    this.canvas.addEventListener('click', function(event) {
       var x = event.pageX - elemLeft,
-         y = event.pageY - elemTop;
+          y = event.pageY - elemTop;
       console.log(x, y);
-      elements.forEach(function(element) {
-         if (y > element.top && y < element.top + element.height && x > element.left && x < element.left + element.width) {
-            alert('clicked an element');
+      squares.forEach(function(square) {
+         if (y > square.top && y < square.top + square.height && x > square.left && x < square.left + square.width) {
+            console.log('clicked on '+ square.name);
          }
       });
 
    }, false);
 
-   elements.push({
-      colour: '#05EFFF',
-      width: this.squareSize,
-      height: this.squareSize,
-      top: this.positions.a1.y,
-      left: this.positions.a1.x
-   });
+   for (var pos in this.positions) {
+      squares.push({
+         name: pos,
+         width: this.squareSize,
+         height: this.squareSize,
+         top: this.positions[pos].y,
+         left: this.positions[pos].x
+      });
+   }
 
 };
+
 
 Board.prototype.drawBoard = function(){
    this.drawSquares();
