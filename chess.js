@@ -1,5 +1,5 @@
 (function(){
 
-   var Board = new Chess.Board('chessboard').drawBoard();
+   var Board = new C.Board('chessboard').drawBoard();
 
 })();
