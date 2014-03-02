@@ -8,7 +8,7 @@
       return this;
    }
 
-   Board.prototype.selectedSquare = null;
+   Board.prototype.selectedSquare = {pieceName:null};
 
    Board.prototype.selectedPiece = null;
 
@@ -24,14 +24,16 @@
          if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
             piece = this.getPieceByPieceName.call(this,pieceName);
             console.log('clicked on '+ squareName, pieceName);
-            this.selectedPiece = pieceName;
-            this.toggleSquareColour(this.selectedSquare != squareName, squareName, square, piece);
-            this.selectedSquare = squareName;
+            this.toggleSquareColour(this.selectedSquare.coord != squareName, squareName, square, piece);
+            this.selectedSquare = square;
          }
       }
    };
 
    Board.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
+      this.highlightSquare(false, this.selectedSquare);
+      this.place(this.selectedSquare.unicode, this.selectedSquare.coord, this.selectedSquare.pieceName);
+
       this.highlightSquare(bool, square);
       this.place(piece.unicode, squareName, piece.pieceName);
    };
@@ -62,15 +64,15 @@
       var piece;
       for (var i = 0; i < Board.SQUARES_PER_ROW; i++) {
          piece = Board.pieces.white.pawn;
-         this.place(piece.unicode, Board.ALPHABET[i]+2, piece.name);
+         this.place(piece.unicode, Board.ALPHABET[i]+2, piece.pieceName);
          piece = Board.pieces.black.pawn;
-         this.place(piece.unicode, Board.ALPHABET[i]+(Board.SQUARES_PER_ROW-1), piece.name);
+         this.place(piece.unicode, Board.ALPHABET[i]+(Board.SQUARES_PER_ROW-1), piece.pieceName);
       }
       for (var i = 0; i < Board.PIECE_ORDER.length; i++) {
          piece = Board.pieces.white[Board.PIECE_ORDER[i]];
-         this.place(piece.unicode, Board.ALPHABET[i] + 1, piece.name);
+         this.place(piece.unicode, Board.ALPHABET[i] + 1, piece.pieceName);
          piece = Board.pieces.black[Board.PIECE_ORDER[i]];
-         this.place(piece.unicode, Board.ALPHABET[i] + Board.SQUARES_PER_ROW, piece.name);
+         this.place(piece.unicode, Board.ALPHABET[i] + Board.SQUARES_PER_ROW, piece.pieceName);
       }
    };
 
@@ -85,11 +87,15 @@
          && x < square.x + this.squareSize;
    };
 
-   Board.prototype.place = function(pieceUnicode, coords, pieceName) {
-      this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
-      this.ctx.font = Board.MEN_FONT;
-      this.ctx.fillText(pieceUnicode, this.positions[coords].x + 4, this.positions[coords].y + 48);
-      this.positions[coords].pieceName = pieceName;
+   Board.prototype.place = function(unicode, coords, pieceName) {
+      if (coords) {
+         this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
+         this.ctx.font = Board.MEN_FONT;
+         this.ctx.fillText(unicode, this.positions[coords].x + 4, this.positions[coords].y + 48);
+         this.positions[coords].pieceName = pieceName;
+         this.positions[coords].unicode = unicode;
+         this.positions[coords].coord = coords;
+      }
    };
 
    Board.prototype.drawSquares = function(){
@@ -127,20 +133,20 @@
 
    Board.pieces = {
       black: {
-         pawn: {unicode: '\u265F', name: "black.pawn"},
-         rook: {unicode: '\u265C', name: "black.rook"},
-         knight: {unicode: '\u265E', name: "black.knight"},
-         bishop: {unicode: '\u265D',name: "black.bishop"},
-         queen: {unicode: '\u265B', name: "black.queen"},
-         king: {unicode: '\u265A', name: "black.king"}
+         pawn: {unicode: '\u265F', pieceName: "black.pawn"},
+         rook: {unicode: '\u265C', pieceName: "black.rook"},
+         knight: {unicode: '\u265E', pieceName: "black.knight"},
+         bishop: {unicode: '\u265D',pieceName: "black.bishop"},
+         queen: {unicode: '\u265B', pieceName: "black.queen"},
+         king: {unicode: '\u265A', pieceName: "black.king"}
       },
       white: {
-         pawn: {unicode: '\u2659', name: "white.pawn"},
-         rook: {unicode: '\u2656', name: "white.rook"},
-         knight: {unicode: '\u2658', name: "white.knight"},
-         bishop: {unicode: '\u2657',name: "white.bishop"},
-         queen: {unicode: '\u2655', name: "white.queen"},
-         king: {unicode: '\u2654', name: "white.king"}
+         pawn: {unicode: '\u2659', pieceName: "white.pawn"},
+         rook: {unicode: '\u2656', pieceName: "white.rook"},
+         knight: {unicode: '\u2658', pieceName: "white.knight"},
+         bishop: {unicode: '\u2657',pieceName: "white.bishop"},
+         queen: {unicode: '\u2655', pieceName: "white.queen"},
+         king: {unicode: '\u2654', pieceName: "white.king"}
       }
    };
 
