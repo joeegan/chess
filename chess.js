@@ -1,5 +1,5 @@
 //(function(){
 
-   var Board = new C.Board('chessboard').drawBoard();
+   var Game = new C.Board('chessboard').drawBoard();
 
 //})();

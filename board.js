@@ -18,9 +18,9 @@
       var mouseX = ev.pageX - this.canvas.offsetLeft,
           mouseY = ev.pageY - this.canvas.offsetTop,
           square, pieceName, squareName, piece;
-      for (squareName in Board.squares) {
-         square = Board.squares[squareName];
-         pieceName = this.getPieceNameFromSquareName.call(this, squareName);
+      for (squareName in this.positions) {
+         square = this.positions[squareName];
+         pieceName = square.pieceName;
          if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
             piece = this.getPieceByPieceName.call(this,pieceName);
             console.log('clicked on '+ squareName, pieceName);
@@ -33,24 +33,18 @@
 
    Board.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
       this.highlightSquare(bool, square);
-      this.place(piece.unicode, squareName, piece.name);
+      this.place(piece.unicode, squareName, piece.pieceName);
    };
 
    Board.prototype.highlightSquare = function(bool, square){
       this.ctx.fillStyle = '#FFF55C';
-      this.ctx.fillRect(square.left, square.top, this.squareSize , this.squareSize);
+      this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
    };
 
    Board.prototype.drawBoard = function(){
       this.drawSquares();
       this.drawBoardEdge();
       this.placePiecesOnBoard();
-      for (var pos in this.positions) {
-         Board.squares[pos] = {
-            top: this.positions[pos].y,
-            left: this.positions[pos].x
-         };
-      }
       this.canvas.addEventListener('click', this.handleBoardClick.bind(this), false);
       return this;
    };
@@ -80,26 +74,22 @@
       }
    };
 
-   Board.prototype.getPieceNameFromSquareName = function(squareName){
-      return this.positions[squareName].name;
-   };
-
    Board.prototype.getPieceByPieceName = function(pieceName){
       return Board.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
    };
 
    Board.prototype.withinSquare = function(x, y, square){
-      return y > square.top
-         && y < square.top + this.squareSize
-         && x > square.left
-         && x < square.left + this.squareSize;
+      return y > square.y
+         && y < square.y + this.squareSize
+         && x > square.x
+         && x < square.x + this.squareSize;
    };
 
    Board.prototype.place = function(pieceUnicode, coords, pieceName) {
       this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
       this.ctx.font = Board.MEN_FONT;
       this.ctx.fillText(pieceUnicode, this.positions[coords].x + 4, this.positions[coords].y + 48);
-      this.positions[coords].name = pieceName;
+      this.positions[coords].pieceName = pieceName;
    };
 
    Board.prototype.drawSquares = function(){
@@ -124,8 +114,9 @@
       }
    };
 
-   Board.squares = {};
+
    Board.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
    Board.PIECE_ORDER = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
 
    Board.pieces = {
