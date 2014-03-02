@@ -1,4 +1,4 @@
-(function(){
+//(function(){
 
    'use strict';
 
@@ -15,29 +15,29 @@
    Board.prototype.positions = {};
 
    Board.prototype.handleBoardClick = function(ev){
-      var mouseX = event.pageX - this.canvas.offsetLeft,
-          mouseY = event.pageY - this.canvas.offsetTop,
-          square, pieceName, squareName;
+      var mouseX = ev.pageX - this.canvas.offsetLeft,
+          mouseY = ev.pageY - this.canvas.offsetTop,
+          square, pieceName, squareName, piece;
       for (squareName in Board.squares) {
          square = Board.squares[squareName];
-         pieceName = this.getPieceFromSquareName(squareName);
+         pieceName = this.getPieceNameFromSquareName.call(this, squareName);
          if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
+            piece = this.getPieceByPieceName.call(this,pieceName);
             console.log('clicked on '+ squareName, pieceName);
             this.selectedPiece = pieceName;
             this.selectedSquare = squareName;
-            this.toggleSquareColour(true, square);
+            this.toggleSquareColour(true, squareName, square, piece);
          }
       }
    };
 
-   Board.prototype.toggleSquareColour = function(bool, square) {
+   Board.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
       this.highlightSquare(bool, square);
-      this.placePiecesOnBoard();
+      this.place(piece.unicode, squareName, piece.name);
    };
 
    Board.prototype.highlightSquare = function(bool, square){
       this.ctx.fillStyle = '#FFF55C';
-      this.ctx.lineWidth = 1;
       this.ctx.fillRect(square.left, square.top, this.squareSize , this.squareSize);
    };
 
@@ -80,8 +80,12 @@
       }
    };
 
-   Board.prototype.getPieceFromSquareName = function(squareName){
+   Board.prototype.getPieceNameFromSquareName = function(squareName){
       return this.positions[squareName].name;
+   };
+
+   Board.prototype.getPieceByPieceName = function(pieceName){
+      return Board.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
    };
 
    Board.prototype.withinSquare = function(x, y, square){
@@ -91,10 +95,10 @@
          && x < square.left + this.squareSize;
    };
 
-   Board.prototype.place = function(piece, coords, pieceName) {
+   Board.prototype.place = function(pieceUnicode, coords, pieceName) {
       this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
       this.ctx.font = Board.MEN_FONT;
-      this.ctx.fillText(piece, this.positions[coords].x + 4, this.positions[coords].y + 48);
+      this.ctx.fillText(pieceUnicode, this.positions[coords].x + 4, this.positions[coords].y + 48);
       this.positions[coords].name = pieceName;
    };
 
@@ -163,4 +167,4 @@
 
    C.Board = Board;
 
-})();
+//})();
