@@ -25,8 +25,8 @@
             piece = this.getPieceByPieceName.call(this,pieceName);
             console.log('clicked on '+ squareName, pieceName);
             this.selectedPiece = pieceName;
+            this.toggleSquareColour(this.selectedSquare != squareName, squareName, square, piece);
             this.selectedSquare = squareName;
-            this.toggleSquareColour(true, squareName, square, piece);
          }
       }
    };
@@ -37,7 +37,7 @@
    };
 
    Board.prototype.highlightSquare = function(bool, square){
-      this.ctx.fillStyle = '#FFF55C';
+      this.ctx.fillStyle = bool ? Board.SELECTED_SQUARE_COLOR : square.colour;
       this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
    };
 
@@ -93,15 +93,21 @@
    };
 
    Board.prototype.drawSquares = function(){
+      var colour;
       this.squareSize = this.canvasW/Board.SQUARES_PER_ROW;
       for (var y=0; y<Board.SQUARES_PER_ROW; y++) {
          for (var x=0; x<Board.SQUARES_PER_ROW; x++) {
-            this.ctx.fillStyle = this.squareColorResolver(x, y);
+            colour = this.squareColorResolver(x, y);
+            this.ctx.fillStyle = colour;
             this.ctx.lineWidth = 1;
             this.ctx.fillRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
             this.ctx.strokeStyle = '#fff';
             this.ctx.strokeRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
-            this.positions[Board.ALPHABET[x] + (Board.SQUARES_PER_ROW-y)] = { x: x*this.squareSize, y: y*this.squareSize };
+            this.positions[Board.ALPHABET[x] + (Board.SQUARES_PER_ROW-y)] = {
+               x: x*this.squareSize,
+               y: y*this.squareSize,
+               colour: colour
+            };
          }
       }
    };
@@ -141,6 +147,8 @@
    Board.DARK_SQUARE_COLOR = '#B58863';
 
    Board.LIGHT_SQUARE_COLOR = '#F0D9B5';
+
+   Board.SELECTED_SQUARE_COLOR = '#FFF55C';
 
    Board.MEN_STROKE_COLOUR = '#000';
 
