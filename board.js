@@ -10,6 +10,8 @@
 
    Board.prototype.selectedSquare = null;
 
+   Board.prototype.selectedPiece = null;
+
    Board.prototype.positions = {};
 
    Board.prototype.handleBoardClick = function(ev){
@@ -21,8 +23,22 @@
          pieceName = this.getPieceFromSquareName(squareName);
          if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
             console.log('clicked on '+ squareName, pieceName);
+            this.selectedPiece = pieceName;
+            this.selectedSquare = squareName;
+            this.toggleSquareColour(true, square);
          }
       }
+   };
+
+   Board.prototype.toggleSquareColour = function(bool, square) {
+      this.highlightSquare(bool, square);
+      this.placePiecesOnBoard();
+   };
+
+   Board.prototype.highlightSquare = function(bool, square){
+      this.ctx.fillStyle = '#FFF55C';
+      this.ctx.lineWidth = 1;
+      this.ctx.fillRect(square.left, square.top, this.squareSize , this.squareSize);
    };
 
    Board.prototype.drawBoard = function(){
@@ -31,8 +47,6 @@
       this.placePiecesOnBoard();
       for (var pos in this.positions) {
          Board.squares[pos] = {
-            width: this.squareSize,
-            height: this.squareSize,
             top: this.positions[pos].y,
             left: this.positions[pos].x
          };
@@ -72,9 +86,9 @@
 
    Board.prototype.withinSquare = function(x, y, square){
       return y > square.top
-         && y < square.top + square.height
+         && y < square.top + this.squareSize
          && x > square.left
-         && x < square.left + square.width;
+         && x < square.left + this.squareSize;
    };
 
    Board.prototype.place = function(piece, coords, pieceName) {
