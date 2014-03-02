@@ -92,14 +92,14 @@ Board.prototype.placePiecesOnBoard = function(){
 };
 
 Board.prototype.placePawns = function(){
-   var pos;
    var piece;
-   for (var i=0; i<Board.SQUARES_PER_ROW; i++) {
+   for (var i = 0; i < Board.SQUARES_PER_ROW; i++) {
       piece = Board.pieces.white.pawn;
       this.place(piece.unicode, Board.ALPHABET[i]+2, piece.name);
+      piece = Board.pieces.black.pawn;
       this.place(piece.unicode, Board.ALPHABET[i]+(Board.SQUARES_PER_ROW-1), piece.name);
    }
-   for (var i=0; i<Board.PIECE_ORDER.length; i++) {
+   for (var i = 0; i < Board.PIECE_ORDER.length; i++) {
       piece = Board.pieces.white[Board.PIECE_ORDER[i]];
       this.place(piece.unicode, Board.ALPHABET[i] + 1, piece.name);
       piece = Board.pieces.black[Board.PIECE_ORDER[i]];
@@ -108,8 +108,8 @@ Board.prototype.placePawns = function(){
 };
 
 Board.prototype.place = function(piece, coords, pieceName) {
-   this.ctx.fillStyle = "blue";
-   this.ctx.font = "bold 54px Arial";
+   this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
+   this.ctx.font = Board.MEN_FONT;
    this.ctx.fillText(piece, this.positions[coords].x + 4, this.positions[coords].y + 48);
    this.positions[coords].name = pieceName;
 };
@@ -161,8 +161,10 @@ Board.pieces = {
    }
 };
 
-Board.DARK_SQUARE_COLOR = 'rgb(16, 240, 224)';
-Board.LIGHT_SQUARE_COLOR = 'rgb(144, 240, 224)';
+Board.DARK_SQUARE_COLOR = '#B58863';
+Board.LIGHT_SQUARE_COLOR = '#F0D9B5';
+Board.MEN_STROKE_COLOUR = '#000';
+Board.MEN_FONT = 'bold 54px Arial';
 Board.SQUARES_PER_ROW = 8;
 
 Board.prototype.squareSize = null;
