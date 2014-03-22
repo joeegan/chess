@@ -8,7 +8,7 @@
       return this;
    }
 
-   Board.prototype.selectedSquare = {pieceName:null};
+   Board.prototype.selectedSquare = null;
 
    Board.prototype.selectedPiece = null;
 
@@ -18,34 +18,49 @@
       var mouseX = ev.pageX - this.canvas.offsetLeft,
           mouseY = ev.pageY - this.canvas.offsetTop,
           square, pieceName, squareName, piece;
-      if (this.selectedPiece) {
-         for (squareName in this.positions) {
-            square = this.positions[squareName];
-            pieceName = square.pieceName;
-            if (this.withinSquare(mouseX, mouseY, square)) {
-               console.log('clicked on '+ squareName);
-               this.toggleSquareColour(this.selectedSquare.coord != squareName, squareName, square, this.selectedPiece);
-               this.selectedSquare = null;
-            }
-         }
-      } else {
-         for (squareName in this.positions) {
-            square = this.positions[squareName];
-            pieceName = square.pieceName;
-            if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
-               piece = this.getPieceByPieceName.call(this,pieceName);
-               console.log('clicked on '+ squareName, pieceName);
-               this.toggleSquareColour(this.selectedSquare.coord != squareName, squareName, square, piece);
+      for (squareName in this.positions) {
+         square = this.positions[squareName];
+         pieceName = square.pieceName;
+         if (this.withinSquare(mouseX, mouseY, square)) {
+            if (!pieceName && !this.selectedSquare) {
+               console.log('empty ' + squareName + ' clicked, no piece selected')
+               this.deselectSquares();
+            } else if (this.selectedSquare && square.coord === this.selectedSquare.coord) {
+               console.log('same piece clicked twice', square.coord);
+               this.deselectSquares();
+            } else if (pieceName && !this.selectedSquare) {
+               console.log(pieceName, square.coord, 'selected');
                this.selectedSquare = square;
-               this.selectedPiece = piece;
+               this.selectedPiece = this.getPieceByPieceName(pieceName);
+            } else if (!pieceName && this.selectedSquare) {
+               console.log('empty square', squareName, 'clicked, with ' + this.selectedSquare.pieceName, this.selectedSquare.coord + ' selected');
+               console.log('remove piece from', this.selectedSquare.coord);
+               this.ctx.fillStyle = this.positions[this.selectedSquare.coord].colour;
+               this.ctx.fillRect(this.selectedSquare.x, this.selectedSquare.y, this.squareSize , this.squareSize);
+               // Ensure piece is removed from positions
+               this.place(null, this.selectedSquare.coord, null);
+               console.log('place', this.selectedPiece.pieceName, squareName);
+               this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
+               this.deselectSquares();
+            } else if (pieceName && this.selectedSquare) {
+               console.log('piece selected, other piece clicked');
+               console.log('take', pieceName, 'with', this.selectedPiece.pieceName);
+               this.deselectSquares();
             }
          }
       }
    };
 
+   Board.prototype.deselectSquares = function(){
+      console.log('unselecting squares');
+      this.selectedSquare = null;
+      this.selectedPiece = null;
+   };
+
    Board.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
-      this.highlightSquare(false, this.selectedSquare);
-      this.place(this.selectedSquare.unicode, this.selectedSquare.coord, this.selectedSquare.pieceName);
+      var square = this.selectedSquare || square;
+      this.highlightSquare(false, square );
+      this.place(square.unicode, square.coord, square.pieceName);
 
       this.highlightSquare(bool, square);
       this.place(piece.unicode, squareName, piece.pieceName);
@@ -104,7 +119,7 @@
       if (coords) {
          this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
          this.ctx.font = Board.MEN_FONT;
-         this.ctx.fillText(unicode, this.positions[coords].x + 4, this.positions[coords].y + 48);
+         this.ctx.fillText(unicode || '', this.positions[coords].x + 4, this.positions[coords].y + 48);
          this.positions[coords].pieceName = pieceName;
          this.positions[coords].unicode = unicode;
          this.positions[coords].coord = coords;
