@@ -37,7 +37,7 @@
                console.log('remove piece from', this.selectedSquare.coord);
                this.ctx.fillStyle = this.positions[this.selectedSquare.coord].colour;
                this.ctx.fillRect(this.selectedSquare.x, this.selectedSquare.y, this.squareSize , this.squareSize);
-               // Ensure piece is removed from positions
+               //  Ensure piece is removed from positions
                this.place(null, this.selectedSquare.coord, null);
                console.log('place', this.selectedPiece.pieceName, squareName);
                this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
@@ -45,6 +45,16 @@
             } else if (pieceName && this.selectedSquare) {
                console.log('piece selected, other piece clicked');
                console.log('take', pieceName, 'with', this.selectedPiece.pieceName);
+
+               this.ctx.fillStyle = this.positions[this.selectedSquare.coord].colour;
+               this.ctx.fillRect(this.selectedSquare.x, this.selectedSquare.y, this.squareSize , this.squareSize);
+               // 'Clear' the square
+//               this.place(null, squareName, null);
+               this.place(null, this.selectedSquare.coord, null);
+               this.ctx.fillStyle = this.positions[squareName].colour;
+               this.ctx.fillRect(this.positions[squareName].x, this.positions[squareName].y, this.squareSize , this.squareSize);
+               this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
+
                this.deselectSquares();
             }
          }
