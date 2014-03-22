@@ -18,14 +18,27 @@
       var mouseX = ev.pageX - this.canvas.offsetLeft,
           mouseY = ev.pageY - this.canvas.offsetTop,
           square, pieceName, squareName, piece;
-      for (squareName in this.positions) {
-         square = this.positions[squareName];
-         pieceName = square.pieceName;
-         if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
-            piece = this.getPieceByPieceName.call(this,pieceName);
-            console.log('clicked on '+ squareName, pieceName);
-            this.toggleSquareColour(this.selectedSquare.coord != squareName, squareName, square, piece);
-            this.selectedSquare = square;
+      if (this.selectedPiece) {
+         for (squareName in this.positions) {
+            square = this.positions[squareName];
+            pieceName = square.pieceName;
+            if (this.withinSquare(mouseX, mouseY, square)) {
+               console.log('clicked on '+ squareName);
+               this.toggleSquareColour(this.selectedSquare.coord != squareName, squareName, square, this.selectedPiece);
+               this.selectedSquare = null;
+            }
+         }
+      } else {
+         for (squareName in this.positions) {
+            square = this.positions[squareName];
+            pieceName = square.pieceName;
+            if (this.withinSquare(mouseX, mouseY, square) && pieceName) {
+               piece = this.getPieceByPieceName.call(this,pieceName);
+               console.log('clicked on '+ squareName, pieceName);
+               this.toggleSquareColour(this.selectedSquare.coord != squareName, squareName, square, piece);
+               this.selectedSquare = square;
+               this.selectedPiece = piece;
+            }
          }
       }
    };
