@@ -8,11 +8,19 @@
       return this;
    }
 
+   UI.prototype.positions = {};
+
    UI.prototype.selectedSquare = null;
 
    UI.prototype.selectedPiece = null;
 
-   UI.prototype.positions = {};
+   UI.prototype.squareSize = null;
+
+   UI.prototype.canvasH = 500;
+
+   UI.prototype.canvasW = 500;
+
+   UI.prototype.ctx = null;
 
    UI.prototype.handleBoardClick = function(ev){
       var mouseX = ev.pageX - this.canvas.offsetLeft,
@@ -26,7 +34,7 @@
                console.log('empty ' + squareName + ' clicked, no piece selected')
                this.deselectSquares();
             } else if (this.selectedSquare && square.coord === this.selectedSquare.coord) {
-               console.log('same piece clicked twice', square.coord);
+               console.log('same square clicked twice', square.coord);
                this.deselectSquares();
             } else if (pieceName && !this.selectedSquare) {
                console.log(pieceName, square.coord, 'selected');
@@ -35,8 +43,7 @@
             } else if (!pieceName && this.selectedSquare) {
                console.log('empty square', squareName, 'clicked, with ' + this.selectedSquare.pieceName, this.selectedSquare.coord + ' selected');
                console.log('remove piece from', this.selectedSquare.coord);
-               this.ctx.fillStyle = this.positions[this.selectedSquare.coord].colour;
-               this.ctx.fillRect(this.selectedSquare.x, this.selectedSquare.y, this.squareSize , this.squareSize);
+               this.fillSquare(this.positions[this.selectedSquare.coord].colour, this.selectedSquare)
                //  Ensure piece is removed from positions
                this.place(null, this.selectedSquare.coord, null);
                console.log('place', this.selectedPiece.pieceName, squareName);
@@ -49,39 +56,26 @@
                   return;
                }
                console.log('piece selected, other piece clicked');
-               console.log('take', pieceName, 'with', this.selectedPiece.pieceName);
-
-               this.ctx.fillStyle = this.positions[this.selectedSquare.coord].colour;
-               this.ctx.fillRect(this.selectedSquare.x, this.selectedSquare.y, this.squareSize , this.squareSize);
+               console.log('capture', pieceName, 'with', this.selectedPiece.pieceName);
+               this.fillSquare(this.positions[this.selectedSquare.coord].colour, this.selectedSquare)
                this.place(null, this.selectedSquare.coord, null);
-               this.ctx.fillStyle = this.positions[squareName].colour;
-               this.ctx.fillRect(this.positions[squareName].x, this.positions[squareName].y, this.squareSize , this.squareSize);
+               this.fillSquare(this.positions[squareName].colour, this.positions[squareName])
                this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
-
                this.deselectSquares();
             }
          }
       }
    };
 
+   UI.prototype.fillSquare = function(colour, square){
+      this.ctx.fillStyle = colour;
+      this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
+   };
+
    UI.prototype.deselectSquares = function(){
       console.log('unselecting squares');
       this.selectedSquare = null;
       this.selectedPiece = null;
-   };
-
-   UI.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
-      var square = this.selectedSquare || square;
-      this.highlightSquare(false, square );
-      this.place(square.unicode, square.coord, square.pieceName);
-
-      this.highlightSquare(bool, square);
-      this.place(piece.unicode, squareName, piece.pieceName);
-   };
-
-   UI.prototype.highlightSquare = function(bool, square){
-      this.ctx.fillStyle = bool ? UI.SELECTED_SQUARE_COLOR : square.colour;
-      this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
    };
 
    UI.prototype.drawBoard = function(){
@@ -98,10 +92,6 @@
    };
 
    UI.prototype.placePiecesOnBoard = function(){
-      this.placePawns();
-   };
-
-   UI.prototype.placePawns = function(){
       var piece;
       for (var i = 0; i < UI.SQUARES_PER_ROW; i++) {
          piece = UI.pieces.white.pawn;
@@ -167,7 +157,6 @@
       }
    };
 
-
    UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
    UI.PIECE_ORDER = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
@@ -195,21 +184,11 @@
 
    UI.LIGHT_SQUARE_COLOR = '#F0D9B5';
 
-   UI.SELECTED_SQUARE_COLOR = '#FFF55C';
-
    UI.MEN_STROKE_COLOUR = '#000';
 
    UI.MEN_FONT = 'bold 54px Arial';
 
    UI.SQUARES_PER_ROW = 8;
-
-   UI.prototype.squareSize = null;
-
-   UI.prototype.canvasH = 500;
-
-   UI.prototype.canvasW = 500;
-
-   UI.prototype.ctx = null;
 
    C.UI = UI;
 
