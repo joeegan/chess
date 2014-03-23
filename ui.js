@@ -2,19 +2,19 @@
 
    'use strict';
 
-   function Board(canvasId){
+   function UI(canvasId){
       this.canvas = document.getElementById(canvasId);
       this.ctx = this.canvas.getContext('2d');
       return this;
    }
 
-   Board.prototype.selectedSquare = null;
+   UI.prototype.selectedSquare = null;
 
-   Board.prototype.selectedPiece = null;
+   UI.prototype.selectedPiece = null;
 
-   Board.prototype.positions = {};
+   UI.prototype.positions = {};
 
-   Board.prototype.handleBoardClick = function(ev){
+   UI.prototype.handleBoardClick = function(ev){
       var mouseX = ev.pageX - this.canvas.offsetLeft,
           mouseY = ev.pageY - this.canvas.offsetTop,
           square, pieceName, squareName, piece;
@@ -64,13 +64,13 @@
       }
    };
 
-   Board.prototype.deselectSquares = function(){
+   UI.prototype.deselectSquares = function(){
       console.log('unselecting squares');
       this.selectedSquare = null;
       this.selectedPiece = null;
    };
 
-   Board.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
+   UI.prototype.toggleSquareColour = function(bool, squareName, square, piece) {
       var square = this.selectedSquare || square;
       this.highlightSquare(false, square );
       this.place(square.unicode, square.coord, square.pieceName);
@@ -79,12 +79,12 @@
       this.place(piece.unicode, squareName, piece.pieceName);
    };
 
-   Board.prototype.highlightSquare = function(bool, square){
-      this.ctx.fillStyle = bool ? Board.SELECTED_SQUARE_COLOR : square.colour;
+   UI.prototype.highlightSquare = function(bool, square){
+      this.ctx.fillStyle = bool ? UI.SELECTED_SQUARE_COLOR : square.colour;
       this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
    };
 
-   Board.prototype.drawBoard = function(){
+   UI.prototype.drawBoard = function(){
       this.drawSquares();
       this.drawBoardEdge();
       this.placePiecesOnBoard();
@@ -92,46 +92,46 @@
       return this;
    };
 
-   Board.prototype.drawBoardEdge = function(){
+   UI.prototype.drawBoardEdge = function(){
       this.ctx.lineWidth   = 1;
       this.ctx.strokeRect(0,  0, this.canvasW, this.canvasH);
    };
 
-   Board.prototype.placePiecesOnBoard = function(){
+   UI.prototype.placePiecesOnBoard = function(){
       this.placePawns();
    };
 
-   Board.prototype.placePawns = function(){
+   UI.prototype.placePawns = function(){
       var piece;
-      for (var i = 0; i < Board.SQUARES_PER_ROW; i++) {
-         piece = Board.pieces.white.pawn;
-         this.place(piece.unicode, Board.ALPHABET[i]+2, piece.pieceName);
-         piece = Board.pieces.black.pawn;
-         this.place(piece.unicode, Board.ALPHABET[i]+(Board.SQUARES_PER_ROW-1), piece.pieceName);
+      for (var i = 0; i < UI.SQUARES_PER_ROW; i++) {
+         piece = UI.pieces.white.pawn;
+         this.place(piece.unicode, UI.ALPHABET[i]+2, piece.pieceName);
+         piece = UI.pieces.black.pawn;
+         this.place(piece.unicode, UI.ALPHABET[i]+(UI.SQUARES_PER_ROW-1), piece.pieceName);
       }
-      for (var i = 0; i < Board.PIECE_ORDER.length; i++) {
-         piece = Board.pieces.white[Board.PIECE_ORDER[i]];
-         this.place(piece.unicode, Board.ALPHABET[i] + 1, piece.pieceName);
-         piece = Board.pieces.black[Board.PIECE_ORDER[i]];
-         this.place(piece.unicode, Board.ALPHABET[i] + Board.SQUARES_PER_ROW, piece.pieceName);
+      for (var i = 0; i < UI.PIECE_ORDER.length; i++) {
+         piece = UI.pieces.white[UI.PIECE_ORDER[i]];
+         this.place(piece.unicode, UI.ALPHABET[i] + 1, piece.pieceName);
+         piece = UI.pieces.black[UI.PIECE_ORDER[i]];
+         this.place(piece.unicode, UI.ALPHABET[i] + UI.SQUARES_PER_ROW, piece.pieceName);
       }
    };
 
-   Board.prototype.getPieceByPieceName = function(pieceName){
-      return Board.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
+   UI.prototype.getPieceByPieceName = function(pieceName){
+      return UI.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
    };
 
-   Board.prototype.withinSquare = function(x, y, square){
+   UI.prototype.withinSquare = function(x, y, square){
       return y > square.y
          && y < square.y + this.squareSize
          && x > square.x
          && x < square.x + this.squareSize;
    };
 
-   Board.prototype.place = function(unicode, coords, pieceName) {
+   UI.prototype.place = function(unicode, coords, pieceName) {
       if (coords) {
-         this.ctx.fillStyle = Board.MEN_STROKE_COLOUR;
-         this.ctx.font = Board.MEN_FONT;
+         this.ctx.fillStyle = UI.MEN_STROKE_COLOUR;
+         this.ctx.font = UI.MEN_FONT;
          this.ctx.fillText(unicode || '', this.positions[coords].x + 4, this.positions[coords].y + 48);
          this.positions[coords].pieceName = pieceName;
          this.positions[coords].unicode = unicode;
@@ -139,18 +139,18 @@
       }
    };
 
-   Board.prototype.drawSquares = function(){
+   UI.prototype.drawSquares = function(){
       var colour;
-      this.squareSize = this.canvasW/Board.SQUARES_PER_ROW;
-      for (var y=0; y<Board.SQUARES_PER_ROW; y++) {
-         for (var x=0; x<Board.SQUARES_PER_ROW; x++) {
+      this.squareSize = this.canvasW/UI.SQUARES_PER_ROW;
+      for (var y=0; y<UI.SQUARES_PER_ROW; y++) {
+         for (var x=0; x<UI.SQUARES_PER_ROW; x++) {
             colour = this.squareColorResolver(x, y);
             this.ctx.fillStyle = colour;
             this.ctx.lineWidth = 1;
             this.ctx.fillRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
             this.ctx.strokeStyle = '#fff';
             this.ctx.strokeRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
-            this.positions[Board.ALPHABET[x] + (Board.SQUARES_PER_ROW-y)] = {
+            this.positions[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
                x: x*this.squareSize,
                y: y*this.squareSize,
                colour: colour
@@ -159,20 +159,20 @@
       }
    };
 
-   Board.prototype.squareColorResolver = function(x, y){
+   UI.prototype.squareColorResolver = function(x, y){
       if ((x+y) & 1) {
-         return Board.DARK_SQUARE_COLOR;
+         return UI.DARK_SQUARE_COLOR;
       } else {
-         return Board.LIGHT_SQUARE_COLOR;
+         return UI.LIGHT_SQUARE_COLOR;
       }
    };
 
 
-   Board.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+   UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-   Board.PIECE_ORDER = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
+   UI.PIECE_ORDER = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
 
-   Board.pieces = {
+   UI.pieces = {
       black: {
          pawn: {unicode: '\u265F', pieceName: "black.pawn"},
          rook: {unicode: '\u265C', pieceName: "black.rook"},
@@ -191,26 +191,26 @@
       }
    };
 
-   Board.DARK_SQUARE_COLOR = '#B58863';
+   UI.DARK_SQUARE_COLOR = '#B58863';
 
-   Board.LIGHT_SQUARE_COLOR = '#F0D9B5';
+   UI.LIGHT_SQUARE_COLOR = '#F0D9B5';
 
-   Board.SELECTED_SQUARE_COLOR = '#FFF55C';
+   UI.SELECTED_SQUARE_COLOR = '#FFF55C';
 
-   Board.MEN_STROKE_COLOUR = '#000';
+   UI.MEN_STROKE_COLOUR = '#000';
 
-   Board.MEN_FONT = 'bold 54px Arial';
+   UI.MEN_FONT = 'bold 54px Arial';
 
-   Board.SQUARES_PER_ROW = 8;
+   UI.SQUARES_PER_ROW = 8;
 
-   Board.prototype.squareSize = null;
+   UI.prototype.squareSize = null;
 
-   Board.prototype.canvasH = 500;
+   UI.prototype.canvasH = 500;
 
-   Board.prototype.canvasW = 500;
+   UI.prototype.canvasW = 500;
 
-   Board.prototype.ctx = null;
+   UI.prototype.ctx = null;
 
-   C.Board = Board;
+   C.UI = UI;
 
 //})();
