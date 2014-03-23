@@ -43,13 +43,16 @@
                this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
                this.deselectSquares();
             } else if (pieceName && this.selectedSquare) {
+               // block taking of own pieces
+               if (pieceName.split('.')[0] === this.selectedSquare.pieceName.split('.')[0]) {
+                  this.deselectSquares();
+                  return;
+               }
                console.log('piece selected, other piece clicked');
                console.log('take', pieceName, 'with', this.selectedPiece.pieceName);
 
                this.ctx.fillStyle = this.positions[this.selectedSquare.coord].colour;
                this.ctx.fillRect(this.selectedSquare.x, this.selectedSquare.y, this.squareSize , this.squareSize);
-               // 'Clear' the square
-//               this.place(null, squareName, null);
                this.place(null, this.selectedSquare.coord, null);
                this.ctx.fillStyle = this.positions[squareName].colour;
                this.ctx.fillRect(this.positions[squareName].x, this.positions[squareName].y, this.squareSize , this.squareSize);
