@@ -1,5 +1,12 @@
 //(function(){
 
-   var Game = new C.UI('chessboard').drawBoard();
+
+   function Chess(){
+      this.engine = new Engine();
+      this.UI = new UI('chessboard', this.engine.positions);
+   }
+
+   new Chess();
+
 
 //})();

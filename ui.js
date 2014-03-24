@@ -2,13 +2,19 @@
 
    'use strict';
 
-   function UI(canvasId){
+   function UI(canvasId, positions){
+      this.positions = positions;
       this.canvas = document.getElementById(canvasId);
       this.ctx = this.canvas.getContext('2d');
+      this.drawBoard();
+      this.renderPiecesOnBoard();
       return this;
    }
 
-   UI.prototype.positions = {};
+   UI.prototype.initialiseEvents = function() {
+//      this.on(C.Engine.POSITIONS_UPDATED_EVENT, this.placePositions);
+//      this.fire(UI.MOVE_MADE_EVENT, move)
+   };
 
    UI.prototype.selectedSquare = null;
 
@@ -45,7 +51,7 @@
                console.log('remove piece from', this.selectedSquare.coord);
                this.fillSquare(this.positions[this.selectedSquare.coord].colour, this.selectedSquare)
                //  Ensure piece is removed from positions
-               this.place(null, this.selectedSquare.coord, null);
+               this.clearSquare(this.selectedSquare.coord);
                console.log('place', this.selectedPiece.pieceName, squareName);
                this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
                this.deselectSquares();
@@ -58,7 +64,7 @@
                console.log('piece selected, other piece clicked');
                console.log('capture', pieceName, 'with', this.selectedPiece.pieceName);
                this.fillSquare(this.positions[this.selectedSquare.coord].colour, this.selectedSquare)
-               this.place(null, this.selectedSquare.coord, null);
+               this.clearSquare(this.selectedSquare.coord);
                this.fillSquare(this.positions[squareName].colour, this.positions[squareName])
                this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
                this.deselectSquares();
@@ -70,6 +76,13 @@
    UI.prototype.fillSquare = function(colour, square){
       this.ctx.fillStyle = colour;
       this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
+   };
+
+   UI.prototype.clearSquare = function(coords){
+      this.ctx.fillText('', this.positions[coords].x + 4, this.positions[coords].y + 48);
+      this.positions[coords].pieceName = null;
+      this.positions[coords].unicode = null;
+      this.positions[coords].coord = coords;
    };
 
    UI.prototype.deselectSquares = function(){
@@ -93,22 +106,22 @@
 
    UI.prototype.placePiecesOnBoard = function(){
       var piece;
-      for (var i = 0; i < UI.SQUARES_PER_ROW; i++) {
-         piece = UI.pieces.white.pawn;
-         this.place(piece.unicode, UI.ALPHABET[i]+2, piece.pieceName);
-         piece = UI.pieces.black.pawn;
-         this.place(piece.unicode, UI.ALPHABET[i]+(UI.SQUARES_PER_ROW-1), piece.pieceName);
+      for (var i = 0; i < C.Engine.SQUARES_PER_ROW; i++) {
+         piece = C.Engine.pieces.white.pawn;
+         this.place(piece.unicode, C.Engine.ALPHABET[i]+2, piece.pieceName);
+         piece = C.Engine.pieces.black.pawn;
+         this.place(piece.unicode, C.Engine.ALPHABET[i]+(C.Engine.SQUARES_PER_ROW-1), piece.pieceName);
       }
-      for (var i = 0; i < UI.PIECE_ORDER.length; i++) {
-         piece = UI.pieces.white[UI.PIECE_ORDER[i]];
-         this.place(piece.unicode, UI.ALPHABET[i] + 1, piece.pieceName);
-         piece = UI.pieces.black[UI.PIECE_ORDER[i]];
-         this.place(piece.unicode, UI.ALPHABET[i] + UI.SQUARES_PER_ROW, piece.pieceName);
+      for (var i = 0; i < C.Engine.PIECE_ORDER.length; i++) {
+         piece = C.Engine.pieces.white[C.Engine.PIECE_ORDER[i]];
+         this.place(piece.unicode, C.Engine.ALPHABET[i] + 1, piece.pieceName);
+         piece = C.Engine.pieces.black[C.Engine.PIECE_ORDER[i]];
+         this.place(piece.unicode, C.Engine.ALPHABET[i] + C.Engine.SQUARES_PER_ROW, piece.pieceName);
       }
    };
 
    UI.prototype.getPieceByPieceName = function(pieceName){
-      return UI.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
+      return C.Engine.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
    };
 
    UI.prototype.withinSquare = function(x, y, square){
@@ -118,33 +131,36 @@
          && x < square.x + this.squareSize;
    };
 
+   UI.prototype.renderPiecesOnBoard = function() {
+      var colour;
+      this.squareSize = this.canvasW/C.Engine.SQUARES_PER_ROW;
+      for (var coord in this.positions) {
+         var piece = this.positions[coord];
+         this.place(piece.unicode, coord, piece.pieceName);
+      }
+   };
+
    UI.prototype.place = function(unicode, coords, pieceName) {
       if (coords) {
          this.ctx.fillStyle = UI.MEN_STROKE_COLOUR;
          this.ctx.font = UI.MEN_FONT;
          this.ctx.fillText(unicode || '', this.positions[coords].x + 4, this.positions[coords].y + 48);
-         this.positions[coords].pieceName = pieceName;
-         this.positions[coords].unicode = unicode;
-         this.positions[coords].coord = coords;
+//         this.engine.feed(this.positions[coords]);
       }
    };
 
    UI.prototype.drawSquares = function(){
       var colour;
-      this.squareSize = this.canvasW/UI.SQUARES_PER_ROW;
-      for (var y=0; y<UI.SQUARES_PER_ROW; y++) {
-         for (var x=0; x<UI.SQUARES_PER_ROW; x++) {
+      this.squareSize = this.canvasW/C.Engine.SQUARES_PER_ROW;
+      for (var y=0; y<C.Engine.SQUARES_PER_ROW; y++) {
+         for (var x=0; x<C.Engine.SQUARES_PER_ROW; x++) {
             colour = this.squareColorResolver(x, y);
             this.ctx.fillStyle = colour;
             this.ctx.lineWidth = 1;
             this.ctx.fillRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
             this.ctx.strokeStyle = '#fff';
             this.ctx.strokeRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
-            this.positions[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
-               x: x*this.squareSize,
-               y: y*this.squareSize,
-               colour: colour
-            };
+
          }
       }
    };
@@ -157,29 +173,6 @@
       }
    };
 
-   UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-
-   UI.PIECE_ORDER = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook'];
-
-   UI.pieces = {
-      black: {
-         pawn: {unicode: '\u265F', pieceName: "black.pawn"},
-         rook: {unicode: '\u265C', pieceName: "black.rook"},
-         knight: {unicode: '\u265E', pieceName: "black.knight"},
-         bishop: {unicode: '\u265D',pieceName: "black.bishop"},
-         queen: {unicode: '\u265B', pieceName: "black.queen"},
-         king: {unicode: '\u265A', pieceName: "black.king"}
-      },
-      white: {
-         pawn: {unicode: '\u2659', pieceName: "white.pawn"},
-         rook: {unicode: '\u2656', pieceName: "white.rook"},
-         knight: {unicode: '\u2658', pieceName: "white.knight"},
-         bishop: {unicode: '\u2657',pieceName: "white.bishop"},
-         queen: {unicode: '\u2655', pieceName: "white.queen"},
-         king: {unicode: '\u2654', pieceName: "white.king"}
-      }
-   };
-
    UI.DARK_SQUARE_COLOR = '#B58863';
 
    UI.LIGHT_SQUARE_COLOR = '#F0D9B5';
@@ -188,7 +181,7 @@
 
    UI.MEN_FONT = 'bold 54px Arial';
 
-   UI.SQUARES_PER_ROW = 8;
+   UI.MOVE_MADE_EVENT = "moveMadeEvent"
 
    C.UI = UI;
 
