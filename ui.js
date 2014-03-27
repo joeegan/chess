@@ -7,7 +7,9 @@
       this.canvas = document.getElementById(canvasId);
       this.ctx = this.canvas.getContext('2d');
       this.drawBoard();
+      this.buildCoordMapping();
       this.renderPiecesOnBoard();
+      this.canvas.addEventListener('click', this.handleBoardClick.bind(this), false);
       return this;
    }
 
@@ -27,6 +29,20 @@
    UI.prototype.canvasW = 500;
 
    UI.prototype.ctx = null;
+
+   UI.prototype.coordMapping = {};
+
+   UI.prototype.buildCoordMapping = function(ev){
+      this.squareSize = this.canvasW/UI.SQUARES_PER_ROW;
+      for (var y=0; y<UI.SQUARES_PER_ROW; y++) {
+         for (var x=0; x<UI.SQUARES_PER_ROW; x++) {
+            this.coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
+               x: x*this.squareSize,
+               y: y*this.squareSize
+            };
+         }
+      }
+   };
 
    UI.prototype.handleBoardClick = function(ev){
       var mouseX = ev.pageX - this.canvas.offsetLeft,
@@ -94,30 +110,13 @@
    UI.prototype.drawBoard = function(){
       this.drawSquares();
       this.drawBoardEdge();
-      this.placePiecesOnBoard();
-      this.canvas.addEventListener('click', this.handleBoardClick.bind(this), false);
+
       return this;
    };
 
    UI.prototype.drawBoardEdge = function(){
       this.ctx.lineWidth   = 1;
       this.ctx.strokeRect(0,  0, this.canvasW, this.canvasH);
-   };
-
-   UI.prototype.placePiecesOnBoard = function(){
-      var piece;
-      for (var i = 0; i < C.Engine.SQUARES_PER_ROW; i++) {
-         piece = C.Engine.pieces.white.pawn;
-         this.place(piece.unicode, C.Engine.ALPHABET[i]+2, piece.pieceName);
-         piece = C.Engine.pieces.black.pawn;
-         this.place(piece.unicode, C.Engine.ALPHABET[i]+(C.Engine.SQUARES_PER_ROW-1), piece.pieceName);
-      }
-      for (var i = 0; i < C.Engine.PIECE_ORDER.length; i++) {
-         piece = C.Engine.pieces.white[C.Engine.PIECE_ORDER[i]];
-         this.place(piece.unicode, C.Engine.ALPHABET[i] + 1, piece.pieceName);
-         piece = C.Engine.pieces.black[C.Engine.PIECE_ORDER[i]];
-         this.place(piece.unicode, C.Engine.ALPHABET[i] + C.Engine.SQUARES_PER_ROW, piece.pieceName);
-      }
    };
 
    UI.prototype.getPieceByPieceName = function(pieceName){
@@ -144,7 +143,7 @@
       if (coords) {
          this.ctx.fillStyle = UI.MEN_STROKE_COLOUR;
          this.ctx.font = UI.MEN_FONT;
-         this.ctx.fillText(unicode || '', this.positions[coords].x + 4, this.positions[coords].y + 48);
+         this.ctx.fillText(unicode || '', this.coordMapping[coords].x + 4, this.coordMapping[coords].y + 48);
 //         this.engine.feed(this.positions[coords]);
       }
    };
@@ -172,6 +171,10 @@
          return UI.LIGHT_SQUARE_COLOR;
       }
    };
+
+   UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+   UI.SQUARES_PER_ROW = 8;
 
    UI.DARK_SQUARE_COLOR = '#B58863';
 
