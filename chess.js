@@ -1,5 +1,7 @@
 //(function(){
 
+// Handles communication between engine and UI
+
 
    function Chess(){
       this.engine = new Engine();
