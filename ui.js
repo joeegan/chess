@@ -30,15 +30,20 @@
 
    UI.prototype.ctx = null;
 
+   /*
+    * Stores the x and y coordinates of each position e.g. a1 {x: 0, y: 0, colour: #000}, b1 etc.
+    */
    UI.prototype.coordMapping = {};
 
-   UI.prototype.buildCoordMapping = function(ev){
+   // TODO consider merging with drawBoard
+   UI.prototype.buildCoordMapping = function(){
       this.squareSize = this.canvasW/UI.SQUARES_PER_ROW;
       for (var y=0; y<UI.SQUARES_PER_ROW; y++) {
          for (var x=0; x<UI.SQUARES_PER_ROW; x++) {
             this.coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
                x: x*this.squareSize,
-               y: y*this.squareSize
+               y: y*this.squareSize,
+               colour: this.squareColorResolver(x, y)
             };
          }
       }
@@ -47,29 +52,29 @@
    UI.prototype.handleBoardClick = function(ev){
       var mouseX = ev.pageX - this.canvas.offsetLeft,
           mouseY = ev.pageY - this.canvas.offsetTop,
-          square, pieceName, squareName, piece;
+          squareXY, pieceName, squareName, piece;
       for (squareName in this.positions) {
-         square = this.positions[squareName];
-         pieceName = square.pieceName;
-         if (this.withinSquare(mouseX, mouseY, square)) {
+         squareXY = this.coordMapping[squareName];
+         pieceName = this.positions[squareName].pieceName;
+         if (this.withinSquare(mouseX, mouseY, squareXY)) {
             if (!pieceName && !this.selectedSquare) {
                console.log('empty ' + squareName + ' clicked, no piece selected')
                this.deselectSquares();
-            } else if (this.selectedSquare && square.coord === this.selectedSquare.coord) {
-               console.log('same square clicked twice', square.coord);
+            } else if (this.selectedSquare && squareName === this.selectedSquare) {
+               console.log('same square clicked twice', squareName);
                this.deselectSquares();
             } else if (pieceName && !this.selectedSquare) {
-               console.log(pieceName, square.coord, 'selected');
-               this.selectedSquare = square;
+               console.log(pieceName, squareName, 'selected');
+               this.selectedSquare = squareName;
                this.selectedPiece = this.getPieceByPieceName(pieceName);
             } else if (!pieceName && this.selectedSquare) {
-               console.log('empty square', squareName, 'clicked, with ' + this.selectedSquare.pieceName, this.selectedSquare.coord + ' selected');
-               console.log('remove piece from', this.selectedSquare.coord);
-               this.fillSquare(this.positions[this.selectedSquare.coord].colour, this.selectedSquare)
+               console.log('empty square', squareName, 'clicked, with ' + this.selectedPiece.pieceName, this.selectedSquare + ' selected');
+               console.log('remove piece from', this.selectedSquare);
+               this.fillSquare(this.coordMapping[this.selectedSquare]);
                //  Ensure piece is removed from positions
-               this.clearSquare(this.selectedSquare.coord);
+//               this.clearSquare(this.selectedSquare);
                console.log('place', this.selectedPiece.pieceName, squareName);
-               this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
+               this.place(this.selectedPiece.unicode, squareName);
                this.deselectSquares();
             } else if (pieceName && this.selectedSquare) {
                // block taking of own pieces
@@ -79,26 +84,26 @@
                }
                console.log('piece selected, other piece clicked');
                console.log('capture', pieceName, 'with', this.selectedPiece.pieceName);
-               this.fillSquare(this.positions[this.selectedSquare.coord].colour, this.selectedSquare)
-               this.clearSquare(this.selectedSquare.coord);
-               this.fillSquare(this.positions[squareName].colour, this.positions[squareName])
-               this.place(this.selectedPiece.unicode, squareName, this.selectedPiece.pieceName);
+               this.fillSquare(this.coordMapping[this.selectedSquare]);
+//               this.clearSquare(this.selectedSquare);
+               this.fillSquare(this.coordMapping[squareName]);
+               this.place(this.selectedPiece.unicode, this.coordMapping[squareName]);
                this.deselectSquares();
             }
          }
       }
    };
 
-   UI.prototype.fillSquare = function(colour, square){
-      this.ctx.fillStyle = colour;
-      this.ctx.fillRect(square.x, square.y, this.squareSize , this.squareSize);
+   UI.prototype.fillSquare = function(coords){
+      this.ctx.fillStyle = coords.colour;
+      this.ctx.fillRect(coords.x, coords.y, this.squareSize , this.squareSize);
    };
 
+   // TODO reintroduce this function to enable clicking on squares that once occupied men.
    UI.prototype.clearSquare = function(coords){
-      this.ctx.fillText('', this.positions[coords].x + 4, this.positions[coords].y + 48);
+      this.ctx.fillText('', this.coordMapping[coords].x + 4, this.coordMapping[coords].y + 48);
       this.positions[coords].pieceName = null;
       this.positions[coords].unicode = null;
-      this.positions[coords].coord = coords;
    };
 
    UI.prototype.deselectSquares = function(){
@@ -110,7 +115,6 @@
    UI.prototype.drawBoard = function(){
       this.drawSquares();
       this.drawBoardEdge();
-
       return this;
    };
 
@@ -131,7 +135,6 @@
    };
 
    UI.prototype.renderPiecesOnBoard = function() {
-      var colour;
       this.squareSize = this.canvasW/C.Engine.SQUARES_PER_ROW;
       for (var coord in this.positions) {
          var piece = this.positions[coord];
@@ -139,7 +142,7 @@
       }
    };
 
-   UI.prototype.place = function(unicode, coords, pieceName) {
+   UI.prototype.place = function(unicode, coords) {
       if (coords) {
          this.ctx.fillStyle = UI.MEN_STROKE_COLOUR;
          this.ctx.font = UI.MEN_FONT;
