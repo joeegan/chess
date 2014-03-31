@@ -25,6 +25,10 @@
       this._deselectSquares();
    };
 
+   UI.prototype.handleMoveDeemedIllegal = function() {
+      this._deselectSquares();
+   };
+
    UI.prototype._selectedSquare = null;
 
    UI.prototype._squareSize = null;
