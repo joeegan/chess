@@ -10,7 +10,7 @@ Queen.prototype.colour = null;
 
 Queen.canMoveForwards = true;
 
-Queen.canMoveBackwards = false;
+Queen.canMoveBackwards = true;
 
 Queen.unicode = '\u2659';
 

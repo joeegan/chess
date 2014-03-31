@@ -4,15 +4,13 @@
 
 function King(colour){
    this.colour = colour;
+   King.constructor.apply(this, arguments);
 }
+King.prototype = Object.create(C.Piece.prototype);
 
-King.prototype.colour = null;
+King.BLACK_UNICODE = '\u265A';
 
-King.canMoveForwards = true;
-
-King.canMoveBackwards = false;
-
-King.unicode = '\u2659';
+King.WHITE_UNICODE = '\u2654';
 
 C.King = King;
 

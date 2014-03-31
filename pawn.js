@@ -4,15 +4,13 @@
 
 function Pawn(colour){
    this.colour = colour;
+   Pawn.superclass.constructor.apply(this, arguments);
 }
+C.extend(Pawn, C.Piece);
 
-Pawn.prototype.colour = null;
+Pawn.BLACK_UNICODE = '\u265F';
 
-Pawn.canMoveForwards = true;
-
-Pawn.canMoveBackwards = false;
-
-Pawn.unicode = '\u2659';
+Pawn.WHITE_UNICODE = '\u2659';
 
 C.Pawn = Pawn;
 

@@ -8,7 +8,7 @@ function Bishop(colour){
 
 Bishop.prototype.colour = null;
 
-Bishop.canMoveForwards = true;
+Bishop.canMoveForwards = false;
 
 Bishop.canMoveBackwards = false;
 
