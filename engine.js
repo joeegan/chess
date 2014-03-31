@@ -12,30 +12,27 @@
       this.buildPositions();
    }
 
+   Engine.prototype = Object.create(Subscribable.prototype);
+
    Engine.prototype.positions = {};
 
-
-   Engine.prototype.initialiseEvents = function() {
-      this.on(UI.MOVE_ATTEMPTED, this.checkMoveLegal);
-      this.on(UI.MOVE_MADE, this.recieveMove)
+   Engine.prototype.checkMoveLegal = function(move, isHuman) {
+      this.place(move);
+      if (isHuman) {
+         this.fire(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions);
+      }
    };
 
-   Engine.prototype.checkMoveLegal = function(move) {
-//      if (move == legal) {
-//         this.fire(LEGAL_MOVE_MADE, move)
-//      }
-   };
-
-   Engine.prototype.recieveMove = function(move) {
-//      this.positions.pushMoveIntoPositions();
-//      this.fire(POSITIONS_UPDATED);
-//      this.calculateNextMove();
-   };
-
-   Engine.prototype.calculateNextMove = function(){
-//      var move = "Nf3g3";
-//      this.positions.pushMoveIntoPositions(move);
-//      this.fire(Engine.POSITIONS_UPDATED, move, positions);
+   Engine.prototype.place = function(move){
+      var moveBreakdown = move.split(/-|x/);
+      var isTake = moveBreakdown[1] == "x";
+      var selectedCoord = moveBreakdown[0];
+      var newCoord = moveBreakdown[1];
+      var pieceToMove = this.positions[selectedCoord];
+      this.positions[newCoord].pieceName = pieceToMove.pieceName;
+      this.positions[newCoord].unicode = pieceToMove.unicode;
+      this.positions[selectedCoord].pieceName = null;
+      this.positions[selectedCoord].unicode = null;
    };
 
    Engine.prototype.buildPositions = function(){
@@ -48,16 +45,18 @@
       }
 
       for (var i=0; i<Engine.SQUARES_PER_ROW; i++) {
-         piece = Engine.pieces.white.pawn;
+         piece = Object.create(Engine.pieces.white.pawn);
          this.positions[Engine.ALPHABET[i]+2] = piece;
-         piece = Engine.pieces.black.pawn;
+         piece = Object.create(Engine.pieces.black.pawn);
          this.positions[Engine.ALPHABET[i]+(Engine.SQUARES_PER_ROW-1)] = piece;
-         piece = Engine.pieces.white[Engine.PIECE_ORDER[i]];
+         piece = Object.create(Engine.pieces.white[Engine.PIECE_ORDER[i]]);
          this.positions[Engine.ALPHABET[i] + 1] = piece;
-         piece = Engine.pieces.black[Engine.PIECE_ORDER[i]];
+         piece = Object.create(Engine.pieces.black[Engine.PIECE_ORDER[i]]);
          this.positions[Engine.ALPHABET[i] + Engine.SQUARES_PER_ROW] = piece;
       }
    };
+
+   Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT = "humanMoveDeemedLegalEvent";
 
    Engine.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 

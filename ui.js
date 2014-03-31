@@ -4,170 +4,139 @@
 
    function UI(canvasId, positions){
       this.positions = positions;
-      this.canvas = document.getElementById(canvasId);
-      this.ctx = this.canvas.getContext('2d');
-      this.drawBoard();
-      this.buildCoordMapping();
-      this.renderPiecesOnBoard();
-      this.canvas.addEventListener('click', this.handleBoardClick.bind(this), false);
+      this._canvas = document.getElementById(canvasId);
+      this._ctx = this._canvas.getContext('2d');
+      this._drawBoard();
+      this._buildCoordMapping();
+      this._renderPiecesOnBoard();
+      this._initialiseEvents();
       return this;
    }
 
-   UI.prototype.initialiseEvents = function() {
-//      this.on(C.Engine.POSITIONS_UPDATED_EVENT, this.placePositions);
-//      this.fire(UI.MOVE_MADE_EVENT, move)
+   UI.prototype = Object.create(Subscribable.prototype);
+
+   UI.prototype._initialiseEvents = function() {
+      this._canvas.addEventListener('click', this._handleBoardClick.bind(this), false);
    };
 
-   UI.prototype.selectedSquare = null;
+   UI.prototype.handleMoveDeemedLegal = function() {
+      this._drawSquares();
+      this._renderPiecesOnBoard();
+      this._deselectSquares();
+   };
 
-   UI.prototype.selectedPiece = null;
+   UI.prototype._selectedSquare = null;
 
-   UI.prototype.squareSize = null;
+   UI.prototype._squareSize = null;
 
-   UI.prototype.canvasH = 500;
+   UI.prototype._canvasH = 500;
 
-   UI.prototype.canvasW = 500;
+   UI.prototype._canvasW = 500;
 
-   UI.prototype.ctx = null;
+   UI.prototype._ctx = null;
 
    /*
     * Stores the x and y coordinates of each position e.g. a1 {x: 0, y: 0, colour: #000}, b1 etc.
     */
-   UI.prototype.coordMapping = {};
+   UI.prototype._coordMapping = {};
 
-   // TODO consider merging with drawBoard
-   UI.prototype.buildCoordMapping = function(){
-      this.squareSize = this.canvasW/UI.SQUARES_PER_ROW;
-      for (var y=0; y<UI.SQUARES_PER_ROW; y++) {
-         for (var x=0; x<UI.SQUARES_PER_ROW; x++) {
-            this.coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
-               x: x*this.squareSize,
-               y: y*this.squareSize,
-               colour: this.squareColorResolver(x, y)
+   // Consider merging with _drawSquares
+   UI.prototype._buildCoordMapping = function(){
+      this._squareSize = this._canvasW/UI.SQUARES_PER_ROW;
+      for (var y = 0; y < UI.SQUARES_PER_ROW; y++) {
+         for (var x = 0; x < UI.SQUARES_PER_ROW; x++) {
+            this._coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
+               x: x*this._squareSize,
+               y: y*this._squareSize,
+               colour: this._squareColorResolver(x, y)
             };
          }
       }
    };
 
-   UI.prototype.handleBoardClick = function(ev){
-      var mouseX = ev.pageX - this.canvas.offsetLeft,
-          mouseY = ev.pageY - this.canvas.offsetTop,
-          squareXY, pieceName, squareName, piece;
+   UI.prototype._handleBoardClick = function(ev){
+      var mouseX = ev.pageX - this._canvas.offsetLeft,
+          mouseY = ev.pageY - this._canvas.offsetTop,
+          squareXY, pieceName, squareName, piece, operator, lan;
       for (squareName in this.positions) {
-         squareXY = this.coordMapping[squareName];
+         squareXY = this._coordMapping[squareName];
          pieceName = this.positions[squareName].pieceName;
-         if (this.withinSquare(mouseX, mouseY, squareXY)) {
-            if (!pieceName && !this.selectedSquare) {
+         if (this._withinSquare(mouseX, mouseY, squareXY)) {
+            if (!pieceName && !this._selectedSquare) {
                console.log('empty ' + squareName + ' clicked, no piece selected')
-               this.deselectSquares();
-            } else if (this.selectedSquare && squareName === this.selectedSquare) {
+               this._deselectSquares();
+            } else if (this._selectedSquare && squareName === this._selectedSquare) {
                console.log('same square clicked twice', squareName);
-               this.deselectSquares();
-            } else if (pieceName && !this.selectedSquare) {
+               this._deselectSquares();
+            } else if (pieceName && !this._selectedSquare) {
                console.log(pieceName, squareName, 'selected');
-               this.selectedSquare = squareName;
-               this.selectedPiece = this.getPieceByPieceName(pieceName);
-            } else if (!pieceName && this.selectedSquare) {
-               console.log('empty square', squareName, 'clicked, with ' + this.selectedPiece.pieceName, this.selectedSquare + ' selected');
-               console.log('remove piece from', this.selectedSquare);
-               this.fillSquare(this.coordMapping[this.selectedSquare]);
-               //  Ensure piece is removed from positions
-//               this.clearSquare(this.selectedSquare);
-               console.log('place', this.selectedPiece.pieceName, squareName);
-               this.place(this.selectedPiece.unicode, squareName);
-               this.deselectSquares();
-            } else if (pieceName && this.selectedSquare) {
-               // block taking of own pieces
-               if (pieceName.split('.')[0] === this.selectedSquare.pieceName.split('.')[0]) {
-                  this.deselectSquares();
-                  return;
-               }
-               console.log('piece selected, other piece clicked');
-               console.log('capture', pieceName, 'with', this.selectedPiece.pieceName);
-               this.fillSquare(this.coordMapping[this.selectedSquare]);
-//               this.clearSquare(this.selectedSquare);
-               this.fillSquare(this.coordMapping[squareName]);
-               this.place(this.selectedPiece.unicode, this.coordMapping[squareName]);
-               this.deselectSquares();
+               this._selectedSquare = squareName;
+            } else if (!pieceName && this._selectedSquare || pieceName && this._selectedSquare) {
+               operator = !!pieceName ? 'x' : '-';
+               lan = this._selectedSquare + operator + squareName;
+               console.log(lan);
+               this.fire(UI.HUMAN_MOVE_MADE_EVENT, lan, true);
             }
          }
       }
    };
 
-   UI.prototype.fillSquare = function(coords){
-      this.ctx.fillStyle = coords.colour;
-      this.ctx.fillRect(coords.x, coords.y, this.squareSize , this.squareSize);
+   UI.prototype._deselectSquares = function(){
+      console.log('unselecting square', this._selectedSquare);
+      this._selectedSquare = null;
    };
 
-   // TODO reintroduce this function to enable clicking on squares that once occupied men.
-   UI.prototype.clearSquare = function(coords){
-      this.ctx.fillText('', this.coordMapping[coords].x + 4, this.coordMapping[coords].y + 48);
-      this.positions[coords].pieceName = null;
-      this.positions[coords].unicode = null;
-   };
-
-   UI.prototype.deselectSquares = function(){
-      console.log('unselecting squares');
-      this.selectedSquare = null;
-      this.selectedPiece = null;
-   };
-
-   UI.prototype.drawBoard = function(){
-      this.drawSquares();
-      this.drawBoardEdge();
+   UI.prototype._drawBoard = function(){
+      this._drawSquares();
+      this._drawBoardEdge();
       return this;
    };
 
-   UI.prototype.drawBoardEdge = function(){
-      this.ctx.lineWidth   = 1;
-      this.ctx.strokeRect(0,  0, this.canvasW, this.canvasH);
+   UI.prototype._drawBoardEdge = function(){
+      this._ctx.lineWidth   = 1;
+      this._ctx.strokeRect(0,  0, this._canvasW, this._canvasH);
    };
 
-   UI.prototype.getPieceByPieceName = function(pieceName){
-      return C.Engine.pieces[pieceName.split('.')[0]][pieceName.split('.')[1]];
-   };
-
-   UI.prototype.withinSquare = function(x, y, square){
+   UI.prototype._withinSquare = function(x, y, square){
       return y > square.y
-         && y < square.y + this.squareSize
+         && y < square.y + this._squareSize
          && x > square.x
-         && x < square.x + this.squareSize;
+         && x < square.x + this._squareSize;
    };
 
-   UI.prototype.renderPiecesOnBoard = function() {
-      this.squareSize = this.canvasW/C.Engine.SQUARES_PER_ROW;
+   UI.prototype._renderPiecesOnBoard = function() {
+      this._squareSize = this._canvasW/C.Engine.SQUARES_PER_ROW;
       for (var coord in this.positions) {
          var piece = this.positions[coord];
-         this.place(piece.unicode, coord, piece.pieceName);
+         this._place(piece.unicode, coord);
       }
    };
 
-   UI.prototype.place = function(unicode, coords) {
+   UI.prototype._place = function(unicode, coords) {
       if (coords) {
-         this.ctx.fillStyle = UI.MEN_STROKE_COLOUR;
-         this.ctx.font = UI.MEN_FONT;
-         this.ctx.fillText(unicode || '', this.coordMapping[coords].x + 4, this.coordMapping[coords].y + 48);
-//         this.engine.feed(this.positions[coords]);
+         this._ctx.fillStyle = UI.MEN_STROKE_COLOUR;
+         this._ctx.font = UI.MEN_FONT;
+         this._ctx.fillText(unicode || '', this._coordMapping[coords].x + 4, this._coordMapping[coords].y + 48);
       }
    };
 
-   UI.prototype.drawSquares = function(){
+   UI.prototype._drawSquares = function(){
       var colour;
-      this.squareSize = this.canvasW/C.Engine.SQUARES_PER_ROW;
+      this._squareSize = this._canvasW/C.Engine.SQUARES_PER_ROW;
       for (var y=0; y<C.Engine.SQUARES_PER_ROW; y++) {
          for (var x=0; x<C.Engine.SQUARES_PER_ROW; x++) {
-            colour = this.squareColorResolver(x, y);
-            this.ctx.fillStyle = colour;
-            this.ctx.lineWidth = 1;
-            this.ctx.fillRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
-            this.ctx.strokeStyle = '#fff';
-            this.ctx.strokeRect(x*this.squareSize, y*this.squareSize, this.squareSize , this.squareSize);
+            colour = this._squareColorResolver(x, y);
+            this._ctx.fillStyle = colour;
+            this._ctx.lineWidth = 1;
+            this._ctx.fillRect(x*this._squareSize, y*this._squareSize, this._squareSize , this._squareSize);
+            this._ctx.strokeStyle = '#fff';
+            this._ctx.strokeRect(x*this._squareSize, y*this._squareSize, this._squareSize , this._squareSize);
 
          }
       }
    };
 
-   UI.prototype.squareColorResolver = function(x, y){
+   UI.prototype._squareColorResolver = function(x, y){
       if ((x+y) & 1) {
          return UI.DARK_SQUARE_COLOR;
       } else {
@@ -187,7 +156,7 @@
 
    UI.MEN_FONT = 'bold 54px Arial';
 
-   UI.MOVE_MADE_EVENT = "moveMadeEvent"
+   UI.HUMAN_MOVE_MADE_EVENT = "humanMadeMoveEvent"
 
    C.UI = UI;
 
