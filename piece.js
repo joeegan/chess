@@ -13,9 +13,9 @@ Piece.prototype.canMoveForwards = true;
 
 Piece.prototype.canMoveBackwards = false;
 
-Piece.prototype.BLACK_UNICODE = '\u265F';
+Piece.prototype.BLACK_UNICODE = null;
 
-Piece.prototype.WHITE_UNICODE = '\u2659';
+Piece.prototype.WHITE_UNICODE = null;
 
 C.Piece = Piece;
 

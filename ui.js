@@ -66,17 +66,18 @@
          squareXY = this._coordMapping[squareName];
          pieceName = this.positions[squareName].pieceName;
          if (this._withinSquare(mouseX, mouseY, squareXY)) {
-            if (!pieceName && !this._selectedSquare) {
+            var isPiece = this.positions[squareName] instanceof C.Piece;
+            if (!isPiece && !this._selectedSquare) {
                console.log('empty ' + squareName + ' clicked, no piece selected')
                this._deselectSquares();
             } else if (this._selectedSquare && squareName === this._selectedSquare) {
                console.log('same square clicked twice', squareName);
                this._deselectSquares();
-            } else if (pieceName && !this._selectedSquare) {
-               console.log(pieceName, squareName, 'selected');
+            } else if (isPiece && !this._selectedSquare) {
+               console.log(isPiece, squareName, 'selected');
                this._selectedSquare = squareName;
-            } else if (!pieceName && this._selectedSquare || pieceName && this._selectedSquare) {
-               operator = !!pieceName ? 'x' : '-';
+            } else if (!isPiece && this._selectedSquare || isPiece && this._selectedSquare) {
+               operator = isPiece ? 'x' : '-';
                lan = this._selectedSquare + operator + squareName;
                console.log(lan);
                this.fire(UI.HUMAN_MOVE_MADE_EVENT, lan, true);

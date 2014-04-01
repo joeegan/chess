@@ -4,13 +4,13 @@
 
 function King(colour){
    this.colour = colour;
-   King.constructor.apply(this, arguments);
+   King.superclass.constructor.apply(this, arguments);
 }
-King.prototype = Object.create(C.Piece.prototype);
+C.extend(King, C.Piece);
 
-King.BLACK_UNICODE = '\u265A';
+King.prototype.BLACK_UNICODE = '\u265A';
 
-King.WHITE_UNICODE = '\u2654';
+King.prototype.WHITE_UNICODE = '\u2654';
 
 C.King = King;
 

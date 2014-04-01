@@ -4,15 +4,19 @@
 
 function Bishop(colour){
    this.colour = colour;
+   Bishop.superclass.constructor.apply(this, arguments);
 }
+C.extend(Bishop, C.Piece);
 
 Bishop.prototype.colour = null;
 
-Bishop.canMoveForwards = false;
+Bishop.prototype.canMoveForwards = false;
 
-Bishop.canMoveBackwards = false;
+Bishop.prototype.canMoveBackwards = false;
 
-Bishop.unicode = '\u2659';
+Bishop.prototype.BLACK_UNICODE = '\u265D';
+
+Bishop.prototype.WHITE_UNICODE = '\u2657';
 
 C.Bishop = Bishop;
 

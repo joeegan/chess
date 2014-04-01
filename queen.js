@@ -4,15 +4,19 @@
 
 function Queen(colour){
    this.colour = colour;
+   Queen.superclass.constructor.apply(this, arguments);
 }
+C.extend(Queen, C.Piece);
 
 Queen.prototype.colour = null;
 
-Queen.canMoveForwards = true;
+Queen.prototype.canMoveForwards = true;
 
-Queen.canMoveBackwards = true;
+Queen.prototype.canMoveBackwards = true;
 
-Queen.unicode = '\u2659';
+Queen.prototype.BLACK_UNICODE = '\u265B';
+
+Queen.prototype.WHITE_UNICODE = '\u2655';
 
 C.Queen = Queen;
 

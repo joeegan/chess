@@ -8,9 +8,9 @@ function Pawn(colour){
 }
 C.extend(Pawn, C.Piece);
 
-Pawn.BLACK_UNICODE = '\u265F';
+Pawn.prototype.BLACK_UNICODE = '\u265F';
 
-Pawn.WHITE_UNICODE = '\u2659';
+Pawn.prototype.WHITE_UNICODE = '\u2659';
 
 C.Pawn = Pawn;
 

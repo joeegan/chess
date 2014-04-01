@@ -62,9 +62,9 @@
       for (var i = 0; i < Engine.SQUARES_PER_ROW; i++) {
          this.positions[Engine.ALPHABET[i] + 2] = new C.Pawn('white');
          this.positions[Engine.ALPHABET[i] + (Engine.SQUARES_PER_ROW - 1)] = new C.Pawn('black');
-         piece = Object.create(C[Engine.PIECE_ORDER[i]], {colour: {value: 'white'}});
+         piece = new C[Engine.PIECE_ORDER[i]]('white');
          this.positions[Engine.ALPHABET[i] + 1] = piece;
-         piece = Object.create(C[Engine.PIECE_ORDER[i]], {colour: {value: 'black'}});
+         piece = new C[Engine.PIECE_ORDER[i]]('black');
          this.positions[Engine.ALPHABET[i] + Engine.SQUARES_PER_ROW] = piece;
       }
    };
