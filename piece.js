@@ -1,5 +1,7 @@
 //(function(){
 
+// Consider piece factory, rather than seperate pieces
+
 'use strict';
 
 function Piece(colour){
