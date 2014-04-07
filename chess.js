@@ -16,6 +16,6 @@
       this.engine.on(C.Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.UI.handleMoveDeemedIllegal, this.UI);
    };
 
-   new Chess();
+   C.Chess = new Chess();
 
 })();
