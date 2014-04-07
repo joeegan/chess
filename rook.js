@@ -1,13 +1,17 @@
-'use strict';
+(function(){
 
-function Rook(colour){
-   this.colour = colour;
-   Rook.superclass.constructor.apply(this, arguments);
-}
-C.extend(Rook, C.Piece);
+   'use strict';
 
-Rook.prototype.BLACK_UNICODE = '\u265C';
+   function Rook(colour){
+      this.colour = colour;
+      Rook.superclass.constructor.apply(this, arguments);
+   }
+   C.extend(Rook, C.Piece);
 
-Rook.prototype.WHITE_UNICODE = '\u2656';
+   Rook.prototype.BLACK_UNICODE = '\u265C';
 
-C.Rook = Rook;
+   Rook.prototype.WHITE_UNICODE = '\u2656';
+
+   C.Rook = Rook;
+
+})();

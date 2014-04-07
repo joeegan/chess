@@ -1,24 +1,24 @@
-//(function(){
+(function(){
 
-// Consider piece factory, rather than seperate pieces
+   // Consider piece factory, rather than seperate pieces
 
-'use strict';
+   'use strict';
 
-function Piece(colour){
-   this.colour = colour;
-   this.unicode = (colour == "black" ? this.BLACK_UNICODE : this.WHITE_UNICODE);
-}
+   function Piece(colour){
+      this.colour = colour;
+      this.unicode = (colour == "black" ? this.BLACK_UNICODE : this.WHITE_UNICODE);
+   }
 
-Piece.prototype.colour = null;
+   Piece.prototype.colour = null;
 
-Piece.prototype.canMoveForwards = true;
+   Piece.prototype.canMoveForwards = true;
 
-Piece.prototype.canMoveBackwards = false;
+   Piece.prototype.canMoveBackwards = false;
 
-Piece.prototype.BLACK_UNICODE = null;
+   Piece.prototype.BLACK_UNICODE = null;
 
-Piece.prototype.WHITE_UNICODE = null;
+   Piece.prototype.WHITE_UNICODE = null;
 
-C.Piece = Piece;
+   C.Piece = Piece;
 
-//})();
+})();

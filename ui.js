@@ -1,4 +1,4 @@
-//(function(){
+(function(){
 
    'use strict';
 
@@ -165,4 +165,4 @@
 
    C.UI = UI;
 
-//})();
+})();

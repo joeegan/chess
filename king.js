@@ -1,17 +1,17 @@
-//(function(){
+(function(){
 
-'use strict';
+   'use strict';
 
-function King(colour){
-   this.colour = colour;
-   King.superclass.constructor.apply(this, arguments);
-}
-C.extend(King, C.Piece);
+   function King(colour){
+      this.colour = colour;
+      King.superclass.constructor.apply(this, arguments);
+   }
+   C.extend(King, C.Piece);
 
-King.prototype.BLACK_UNICODE = '\u265A';
+   King.prototype.BLACK_UNICODE = '\u265A';
 
-King.prototype.WHITE_UNICODE = '\u2654';
+   King.prototype.WHITE_UNICODE = '\u2654';
 
-C.King = King;
+   C.King = King;
 
-//})();
+})();
