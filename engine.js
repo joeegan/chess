@@ -16,6 +16,8 @@
 
    Engine.prototype.positions = {};
 
+   Engine.prototype.turn = 'white';
+
    Engine.prototype.checkMoveLegal = function(move, isHuman) {
       var moveBreakdown = move.split(/-|x/);
       var isTake = moveBreakdown[1] == "x";
@@ -32,10 +34,10 @@
    };
 
    Engine.prototype._checkLegal = function(selectedCoord, newCoord) {
-      if (this.positions[newCoord] instanceof C.Piece
-         && (this.positions[selectedCoord].colour
-          == this.positions[newCoord].colour)) {
-         console.log('can\'t take own piece');
+      if ((this.positions[newCoord] instanceof C.Piece
+         && (this.positions[selectedCoord].colour == this.positions[newCoord].colour))
+         || this.positions[selectedCoord].colour != this.turn
+         ) {
          return false;
       }
       return true;
@@ -44,6 +46,11 @@
    Engine.prototype.place = function(selectedCoord, newCoord){
       this.positions[newCoord] = this.positions[selectedCoord];
       this.positions[selectedCoord] = {};
+      this.changeTurn(this.positions[newCoord].colour);
+   };
+
+   Engine.prototype.changeTurn = function(colour) {
+     this.turn = (colour == 'white') ? 'black' : 'white';
    };
 
    Engine.prototype.buildPositions = function(){

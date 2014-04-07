@@ -1,4 +1,4 @@
-//(function(){
+(function(){
 
 'use strict';
 
@@ -20,4 +20,4 @@ Knight.prototype.WHITE_UNICODE = '\u2658';
 
 C.Knight = Knight;
 
-//})();
+})();
