@@ -34,9 +34,16 @@
    };
 
    Engine.prototype._checkLegal = function(selectedCoord, newCoord) {
-      if ((this.positions[newCoord] instanceof C.Piece
-         && (this.positions[selectedCoord].colour == this.positions[newCoord].colour))
+     var selectedCoordFile = selectedCoord.slice(0,1);
+     var selectedCoordRow = +selectedCoord.slice(1);
+     var newCoordFile = newCoord.slice(0,1);
+     var newCoordRow = +newCoord.slice(1);
+
+      if ((this.positions[newCoord] instanceof C.Piece && (this.positions[selectedCoord].colour == this.positions[newCoord].colour))
          || this.positions[selectedCoord].colour != this.turn
+         // prevent moving backwards
+         || this.turn == 'white' && newCoordRow < selectedCoordRow
+         || this.turn == 'black' && newCoordRow > selectedCoordRow
          ) {
          return false;
       }
