@@ -10,22 +10,28 @@
    }
 
    Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn) {
-      var selectedCoordFile = selectedCoord.slice(0,1);
-      var selectedCoordRow = +selectedCoord.slice(1);
-      var newCoordFile = newCoord.slice(0,1);
-      var newCoordRow = +newCoord.slice(1);
-      var turnWhite = turn == 'white';
-      var turnBlack = turn == 'black';
-      if ((!this.canMoveBackwards && turnWhite && newCoordRow < selectedCoordRow)
-         || (!this.canMoveBackwards && turnBlack && newCoordRow > selectedCoordRow)
-         || (!this.multiMove && !this.checkMultiMove(arguments))
-         || (!this.canMoveSideways && !this.checkSideways(arguments))) {
+      if ( (!this.canMoveBackwards && this.movedBackwards(arguments))
+         || (!this.canMultiMove && this.movedMultiMove(arguments))
+         || (!this.canMoveSideways && this.checkSideways(arguments))) {
+         console.log('move was illegal');
          return false;
       }
-      return true
+      return true;
    };
 
-   Piece.prototype.checkMultiMove = function() {
+   Piece.prototype.movedBackwards = function() {
+      var selectedCoordRow = +arguments[0][0].slice(1);
+      var newCoordRow = +arguments[0][1].slice(1);
+      var turn = arguments[0][2];
+      if ((turn == 'white' && newCoordRow < selectedCoordRow)
+      || (turn == 'black' && newCoordRow > selectedCoordRow)) {
+         console.log('move was backwards');
+         return true;
+      }
+      return false;
+   };
+
+   Piece.prototype.movedMultiMove = function() {
       // temp, think of some OO way to reuse this...
       var selectedCoordFile = arguments[0][0].slice(0,1);
       var selectedCoordRow = +arguments[0][0].slice(1);
@@ -36,18 +42,20 @@
       var coordRowDifference = Math.abs(selectedCoordRow - newCoordRow);
       if (coordFileDifference > 1
          || coordRowDifference > 1) {
-         return false;
+         console.log('can\'t multimove');
+         return true;
       }
-      return true;
+      return false;
    };
 
    Piece.prototype.checkSideways = function() {
       var selectedCoordRow = +arguments[0][0].slice(1);
       var newCoordRow = +arguments[0][1].slice(1);
       if (selectedCoordRow == newCoordRow) {
-         return false;
+         console.log('can\'t move sideways');
+         return true;
       }
-      return true;
+      return false;
    };
 
    Piece.prototype.colour = null;
@@ -56,9 +64,13 @@
 
    Piece.prototype.canMoveSideways = true;
 
-   Piece.prototype.multiMove = true;
+   /**
+    * Can move more than one space in any direction
+    * @type {boolean}
+    */
+   Piece.prototype.canMultiMove = true;
 
-   Piece.prototype.canMoveBackwards = false;
+   Piece.prototype.canMoveBackwards = true;
 
    Piece.prototype.BLACK_UNICODE = null;
 

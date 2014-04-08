@@ -34,13 +34,32 @@
    };
 
    Engine.prototype._checkLegal = function(selectedCoord, newCoord) {
-      if ((this.positions[newCoord] instanceof C.Piece && (this.positions[selectedCoord].colour == this.positions[newCoord].colour))
-         || this.positions[selectedCoord].colour != this.turn
+      var selectedColour = this.positions[selectedCoord].colour;
+      var newColour = this.positions[newCoord].colour;
+      if ((this.positions[newCoord] instanceof C.Piece
+         && this.tookOwnPiece(selectedColour, newColour))
+         || this.tookConsecutiveTurns(selectedColour)
          || !this.positions[selectedCoord].checkLegal(selectedCoord, newCoord, this.turn)
          ) {
          return false;
       }
       return true;
+   };
+
+   Engine.prototype.tookOwnPiece = function(selectedColour, newColour) {
+      if (selectedColour == newColour) {
+         console.log('can\'t take own piece');
+         return true;
+      }
+      return false;
+   };
+
+   Engine.prototype.tookConsecutiveTurns = function(selectedColour){
+      if (selectedColour != this.turn) {
+         console.log(selectedColour + ' took consecutive turns');
+         return true;
+      }
+      return false;
    };
 
    Engine.prototype.place = function(selectedCoord, newCoord){

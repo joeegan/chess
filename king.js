@@ -8,7 +8,7 @@
    }
    C.extend(King, C.Piece);
 
-   King.prototype.multiMove = false;
+   King.prototype.canMultiMove = false;
 
    King.prototype.BLACK_UNICODE = '\u265A';
 

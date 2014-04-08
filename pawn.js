@@ -8,9 +8,11 @@
    }
    C.extend(Pawn, C.Piece);
 
-   Pawn.prototype.multiMove = false;
+   Pawn.prototype.canMultiMove = false;
 
    Pawn.prototype.canMoveSideways = false;
+
+   Pawn.prototype.canMoveBackwards = false;
 
    Pawn.prototype.BLACK_UNICODE = '\u265F';
 
