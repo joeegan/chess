@@ -39,7 +39,7 @@
       if ((this.positions[newCoord] instanceof C.Piece
          && this.tookOwnPiece(selectedColour, newColour))
          || this.tookConsecutiveTurns(selectedColour)
-         || !this.positions[selectedCoord].checkLegal(selectedCoord, newCoord, this.turn)
+         || !this.positions[selectedCoord].checkLegal(selectedCoord, newCoord, this.turn, this.positions)
          ) {
          return false;
       }

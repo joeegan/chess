@@ -10,10 +10,6 @@
 
    Queen.prototype.colour = null;
 
-   Queen.prototype.canMoveForwards = true;
-
-   Queen.prototype.canMoveBackwards = true;
-
    Queen.prototype.BLACK_UNICODE = '\u265B';
 
    Queen.prototype.WHITE_UNICODE = '\u2655';

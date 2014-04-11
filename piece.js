@@ -9,10 +9,11 @@
       this.unicode = (colour == "black" ? this.BLACK_UNICODE : this.WHITE_UNICODE);
    }
 
-   Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn) {
-      var moveData = this._processMoveData(selectedCoord, newCoord, turn);
+   Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
+      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
       if ( (!this.canMoveBackwards && this.movedBackwards(moveData))
          || (!this.canMultiMove && this.movedMultiMove(moveData))
+         || (!this.canMoveDiagonally && this.movedDiagonally(moveData))
          || (!this.canMoveSideways && this.checkSideways(moveData))) {
          console.log('move was illegal');
          return false;
@@ -20,13 +21,16 @@
       return true;
    };
    
-   Piece.prototype._processMoveData = function(selectedCoord, newCoord, turn){
+   Piece.prototype._processMoveData = function(selectedCoord, newCoord, turn, positions){
      return {
+         selectedCoord: selectedCoord,
+         newCoord: newCoord,
          selectedCoordRow: +selectedCoord.slice(1),
          selectedCoordFile: selectedCoord.slice(0,1),
          newCoordFile: newCoord.slice(0,1),
          newCoordRow: +newCoord.slice(1),
-         turn: turn
+         turn: turn,
+         positions: positions
      }  
    };
 
@@ -51,6 +55,17 @@
       return false;
    };
 
+   Piece.prototype.movedDiagonally = function(moveData) {
+      var ALPHABET = C.Engine.ALPHABET;
+      var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
+      var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
+      if (coordFileDifference == coordRowDifference) {
+         console.log('diagonal move attempted');
+         return true;
+      }
+      return false;
+   };
+
    Piece.prototype.checkSideways = function(moveData) {
       if (moveData.selectedCoordRow == moveData.newCoordRow) {
          console.log('can\'t move sideways');
@@ -64,6 +79,8 @@
    Piece.prototype.canMoveForwards = true;
 
    Piece.prototype.canMoveSideways = true;
+
+   Piece.prototype.canMoveDiagonally = true;
 
    /**
     * Can move more than one space in any direction
