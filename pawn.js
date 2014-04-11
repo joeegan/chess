@@ -8,6 +8,22 @@
    }
    C.extend(Pawn, C.Piece);
 
+   Pawn.prototype.movedMultiMove = function(moveData) {
+      if (moveData.turn == 'white'
+          && moveData.selectedCoordRow == 2
+          && moveData.newCoordRow == 4
+          && moveData.selectedCoordFile == moveData.newCoordFile) {
+         return false;
+      } else if (moveData.turn == 'black'
+         && moveData.selectedCoordRow == 7
+         && moveData.newCoordRow == 5
+         && moveData.selectedCoordFile == moveData.newCoordFile) {
+         return false;
+      } else {
+         return Pawn.superclass.movedMultiMove.call(this, moveData);
+      }
+   };
+
    Pawn.prototype.canMultiMove = false;
 
    Pawn.prototype.canMoveSideways = false;

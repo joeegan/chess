@@ -40,7 +40,6 @@
    };
 
    Piece.prototype.movedMultiMove = function(moveData) {
-      // temp, think of some OO way to reuse this...
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
       var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);

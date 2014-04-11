@@ -64,7 +64,7 @@
           squareXY, pieceName, squareName, piece, operator, lan;
       for (squareName in this.positions) {
          squareXY = this._coordMapping[squareName];
-         pieceName = this.positions[squareName].pieceName;
+         pieceName = this.positions[squareName].constructor.name;
          if (this._withinSquare(mouseX, mouseY, squareXY)) {
             var isPiece = this.positions[squareName] instanceof C.Piece;
             if (!isPiece && !this._selectedSquare) {
@@ -74,7 +74,7 @@
                console.log('same square clicked twice', squareName);
                this._deselectSquares();
             } else if (isPiece && !this._selectedSquare) {
-               console.log(isPiece, squareName, 'selected');
+               console.log(pieceName, squareName, 'selected');
                this._selectedSquare = squareName;
             } else if (!isPiece && this._selectedSquare || isPiece && this._selectedSquare) {
                operator = isPiece ? 'x' : '-';
