@@ -35,8 +35,12 @@
    };
 
    Piece.prototype.movedBackwards = function(moveData) {
-      if ((moveData.turn == 'white' && moveData.newCoordRow < moveData.selectedCoordRow)
-      || (moveData.turn == 'black' && moveData.newCoordRow > moveData.selectedCoordRow)) {
+      if ((moveData.turn == 'white'
+           && moveData.newCoordRow < moveData.selectedCoordRow
+           && moveData.newCoordFile == moveData.selectedCoordFile)
+      || (moveData.turn == 'black'
+          && moveData.newCoordRow > moveData.selectedCoordRow
+          && moveData.newCoordFile == moveData.selectedCoordFile)) {
          console.log('move was backwards');
          return true;
       }

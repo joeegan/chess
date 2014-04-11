@@ -14,6 +14,8 @@
 
    Bishop.prototype.canMoveBackwards = false;
 
+   Bishop.prototype.canMoveSideways = false;
+
    Bishop.prototype.BLACK_UNICODE = '\u265D';
 
    Bishop.prototype.WHITE_UNICODE = '\u2657';

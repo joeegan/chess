@@ -30,8 +30,15 @@
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
       var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
+      var moveWasForward;
+      if (moveData.turn == 'white') {
+         moveWasForward = moveData.newCoordRow > moveData.selectedCoordRow;
+      } else {
+         moveWasForward = moveData.newCoordRow < moveData.selectedCoordRow;
+      }
       if (coordFileDifference == 1
           && coordRowDifference == 1
+          && moveWasForward
           && moveData.positions[moveData.newCoord] instanceof C.Piece) {
          return false;
       } else {
