@@ -12,7 +12,7 @@
       this.buildPositions();
    }
 
-   Engine.prototype = Object.create(Subscribable.prototype);
+   Engine.prototype = Object.create(Observer.prototype);
 
    Engine.prototype.positions = {};
 
@@ -26,10 +26,10 @@
       if (this._checkLegal(selectedCoord, newCoord)) {
          if (isHuman) {
             this.place(selectedCoord, newCoord);
-            this.fire(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions);
+            this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions);
          }
       } else if (isHuman) {
-         this.fire(Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.positions);
+         this.publish(Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.positions);
       }
    };
 

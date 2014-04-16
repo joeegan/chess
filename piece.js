@@ -9,18 +9,44 @@
       this.unicode = (colour == "black" ? this.BLACK_UNICODE : this.WHITE_UNICODE);
    }
 
+   // something wrong with this || business
+
    Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
       var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
-      if ( (!this.canMoveBackwards && this.movedBackwards(moveData))
-         || (!this.canMultiMove && this.movedMultiMove(moveData))
-         || (!this.canMoveDiagonally && this.movedDiagonally(moveData))
-         || (!this.canMoveSideways && this.checkSideways(moveData))) {
-         console.log('move was illegal');
-         return false;
-      }
-      return true;
+      return (this.movedMultiMove(moveData) && this.canMultiMove
+              || this.movedBackwards(moveData)     && this.canMoveBackwards
+              || this.movedForwards(moveData)   && this.canMoveForwards   && this.clearRouteForwards(moveData)
+              || this.movedDiagonally(moveData) && this.canMoveDiagonally
+      );
    };
-   
+
+   Piece.prototype.clearRouteForwards = function(moveData) {
+      var clearRoute = true;
+      if (moveData.turn == 'white') {
+         for (var i = moveData.selectedCoordRow + 1; i < moveData.newCoordRow; i++) {
+            if (moveData.positions[moveData.selectedCoordFile + i] instanceof Piece) {
+               clearRoute = false;
+               console.log('there was a blockage', moveData.selectedCoordFile + i, moveData.positions[moveData.selectedCoordFile + i]);
+               break;
+            }
+         }
+      }
+      if (moveData.turn == 'black') {
+         for (var i = moveData.selectedCoordRow - 1; i > moveData.newCoordRow; i--) {
+            if (moveData.positions[moveData.selectedCoordFile + i] instanceof Piece) {
+               clearRoute = false;
+               console.log('there was a blockage', moveData.selectedCoordFile + i, moveData.positions[moveData.selectedCoordFile + i]);
+               break;
+            }
+         }
+      }
+
+      console.log('clear route forwards', clearRoute);
+
+      return clearRoute;
+   };
+
+
    Piece.prototype._processMoveData = function(selectedCoord, newCoord, turn, positions){
      return {
          selectedCoord: selectedCoord,
@@ -42,6 +68,19 @@
           && moveData.newCoordRow > moveData.selectedCoordRow
           && moveData.newCoordFile == moveData.selectedCoordFile)) {
          console.log('move was backwards');
+         return true;
+      }
+      return false;
+   };
+
+   Piece.prototype.movedForwards = function(moveData) {
+      if ((moveData.turn == 'white'
+         && moveData.newCoordRow > moveData.selectedCoordRow
+         && moveData.newCoordFile == moveData.selectedCoordFile)
+         || (moveData.turn == 'black'
+         && moveData.newCoordRow < moveData.selectedCoordRow
+         && moveData.newCoordFile == moveData.selectedCoordFile)) {
+         console.log('move was forwards');
          return true;
       }
       return false;

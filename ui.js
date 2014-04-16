@@ -13,7 +13,7 @@
       return this;
    }
 
-   UI.prototype = Object.create(Subscribable.prototype);
+   UI.prototype = Object.create(Observer.prototype);
 
    UI.prototype._initialiseEvents = function() {
       this._canvas.addEventListener('click', this._handleBoardClick.bind(this), false);
@@ -80,7 +80,7 @@
                operator = isPiece ? 'x' : '-';
                lan = this._selectedSquare + operator + squareName;
                console.log(lan);
-               this.fire(UI.HUMAN_MOVE_MADE_EVENT, lan, true);
+               this.publish(UI.HUMAN_MOVE_MADE_EVENT, lan, true);
             }
          }
       }
@@ -161,7 +161,7 @@
 
    UI.MEN_FONT = 'bold 54px Arial';
 
-   UI.HUMAN_MOVE_MADE_EVENT = "humanMadeMoveEvent"
+   UI.HUMAN_MOVE_MADE_EVENT = "humanMadeMoveEvent";
 
    C.UI = UI;
 
