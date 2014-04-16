@@ -9,12 +9,9 @@
       this.unicode = (colour == "black" ? this.BLACK_UNICODE : this.WHITE_UNICODE);
    }
 
-   // something wrong with this || business
-
    Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
       var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
-      return (this.movedMultiMove(moveData) && this.canMultiMove
-              || this.movedBackwards(moveData)     && this.canMoveBackwards
+      return (this.movedBackwards(moveData)     && this.canMoveBackwards
               || this.movedForwards(moveData)   && this.canMoveForwards   && this.clearRouteForwards(moveData)
               || this.movedDiagonally(moveData) && this.canMoveDiagonally
       );
@@ -124,12 +121,6 @@
    Piece.prototype.canMoveSideways = true;
 
    Piece.prototype.canMoveDiagonally = true;
-
-   /**
-    * Can move more than one space in any direction
-    * @type {boolean}
-    */
-   Piece.prototype.canMultiMove = true;
 
    Piece.prototype.canMoveBackwards = true;
 
