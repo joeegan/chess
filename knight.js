@@ -2,8 +2,7 @@
 
    'use strict';
 
-   function Knight(colour){
-      this.colour = colour;
+   function Knight(){
       Knight.superclass.constructor.apply(this, arguments);
    }
    C.extend(Knight, C.Piece);
@@ -15,7 +14,6 @@
       var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
       if (coordFileDifference == 1 && coordRowDifference == 2
           || coordFileDifference == 2 && coordRowDifference == 1) {
-         console.log('you just moved like a pony');
          return true;
       }
       return false;

@@ -2,8 +2,7 @@
 
    'use strict';
 
-   function Rook(colour){
-      this.colour = colour;
+   function Rook(){
       Rook.superclass.constructor.apply(this, arguments);
    }
    C.extend(Rook, C.Piece);

@@ -2,8 +2,7 @@
 
    'use strict';
 
-   function King(colour){
-      this.colour = colour;
+   function King(){
       King.superclass.constructor.apply(this, arguments);
    }
    C.extend(King, C.Piece);
@@ -13,10 +12,7 @@
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
       var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
-      if (coordFileDifference == 1 && coordRowDifference == 1) {
-         return true;
-      }
-      return false;
+      return (coordFileDifference == 1 && coordRowDifference == 1);
    };
 
    King.prototype.BLACK_UNICODE = '\u265A';

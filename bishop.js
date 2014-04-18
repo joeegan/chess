@@ -2,19 +2,15 @@
 
    'use strict';
 
-   function Bishop(colour){
-      this.colour = colour;
+   function Bishop(){
       Bishop.superclass.constructor.apply(this, arguments);
    }
    C.extend(Bishop, C.Piece);
 
-   Bishop.prototype.colour = null;
-
-   Bishop.prototype.canMoveForwards = false;
-
-   Bishop.prototype.canMoveBackwards = false;
-
-   Bishop.prototype.canMoveSideways = false;
+   Bishop.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
+      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
+      return this.movedDiagonally(moveData) && this.clearRouteDiagonally(moveData);
+   };
 
    Bishop.prototype.BLACK_UNICODE = '\u265D';
 

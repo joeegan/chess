@@ -2,8 +2,7 @@
 
    'use strict';
 
-   function Queen(colour){
-      this.colour = colour;
+   function Queen(){
       Queen.superclass.constructor.apply(this, arguments);
    }
    C.extend(Queen, C.Piece);

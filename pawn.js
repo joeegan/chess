@@ -2,11 +2,16 @@
 
    'use strict';
 
-   function Pawn(colour){
-      this.colour = colour;
+   function Pawn(){
       Pawn.superclass.constructor.apply(this, arguments);
    }
    C.extend(Pawn, C.Piece);
+
+   Pawn.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
+      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
+      return (this.movedDiagonally(moveData)
+         || this.movedForwards(moveData) && this.clearRouteForwards(moveData));
+   };
 
    Pawn.prototype.movedForwards = function(moveData) {
       // Pawns multimove exception is white row 2 - 4, black row 7 - 5.
@@ -55,12 +60,6 @@
          return false;
       }
    };
-
-   Pawn.prototype.canMoveSideways = false;
-
-   Pawn.prototype.canMoveBackwards = false;
-
-   Pawn.prototype.canMoveDiagonally = true;
 
    Pawn.prototype.BLACK_UNICODE = '\u265F';
 
