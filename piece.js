@@ -54,28 +54,26 @@
       var positiveRowIncrement = moveData.selectedCoordRow + 1;
       var negativeRowIncrement = moveData.selectedCoordRow - 1;
       var difference = selectedFileIndex > newFileIndex ? selectedFileIndex - newFileIndex : newFileIndex - selectedFileIndex;
-      if (moveData.turn == 'white') {
-         for (var i = 1; i < difference; i++) {
-            clearRoute = false;
-            if (newFileIndex > selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+positiveRowIncrement; // north east
-            } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+positiveRowIncrement; // north west
-            } else if (newFileIndex > selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+negativeRowIncrement; // south east
-            } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+negativeRowIncrement; // south west
-            }
-            clearRoute = !(moveData.positions[coordToCheck] instanceof C.Piece);
-            if (!clearRoute) {
-               console.log('there was a blockage', coordToCheck, moveData.positions[coordToCheck]);
-               break;
-            }
-            negativeFileIncrement--;
-            positiveFileIncrement++;
-            negativeRowIncrement--;
-            positiveRowIncrement++;
+      for (var i = 1; i < difference; i++) {
+         clearRoute = false;
+         if (newFileIndex > selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
+            coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+positiveRowIncrement; // north east
+         } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
+            coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+positiveRowIncrement; // north west
+         } else if (newFileIndex > selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
+            coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+negativeRowIncrement; // south east
+         } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
+            coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+negativeRowIncrement; // south west
          }
+         clearRoute = !(moveData.positions[coordToCheck] instanceof C.Piece);
+         if (!clearRoute) {
+            console.log('there was a blockage', coordToCheck, moveData.positions[coordToCheck]);
+            break;
+         }
+         negativeFileIncrement--;
+         positiveFileIncrement++;
+         negativeRowIncrement--;
+         positiveRowIncrement++;
       }
       return clearRoute;
    };
