@@ -33,23 +33,48 @@
    Engine.prototype.handleMoveAttempted = function(lan) {
       var selectedCoord = lan.match(/[a-z]\d/)[0];
       var newCoord = lan.match(/[a-z]\d$/)[0];
-      if (this._checkLegal(selectedCoord, newCoord)) {
+      var newColour = this.positions[newCoord].colour;
+      if (this._checkLegal(selectedCoord, newCoord, newColour)) {
          this.place(selectedCoord, newCoord);
          this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, lan, this.turn);
          this.changeTurn(this.positions[newCoord].colour);
+         this.respondWithMove();
       } else {
          this.publish(Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.positions);
       }
    };
 
    /**
+    *
+    */
+   Engine.prototype.respondWithMove = function(){
+      var selectedCoord, newCoord;
+      for (var coord in this.positions) {
+         if (coord.colour == 'black' && coord instanceof C.Pawn) {
+            newCoord = coord.substr(0,1) + coord.substr(1) + 1;
+            if (this._checkLegal(coord, newCoord, 'white')) {
+               selectedCoord = coord;
+               break;
+            }
+         }
+      }
+      var lan = selectedCoord + '-' + newCoord;
+      if (this._checkLegal(selectedCoord, newCoord, 'white')) {
+         this.place(selectedCoord, newCoord);
+         this.publish(Engine.COMPUTER_MOVE_MADE_EVENT, this.positions, lan);
+         this.changeTurn('black');
+      }
+
+   };
+
+   /**
     * @param {String} selectedCoord e.g. e2
     * @param {String} newCoord e.g. e5
+    * @param {String} newColour e.g. 'white'
     * @returns {boolean} Whether the rules of chess permit the attempted move.
     */
-   Engine.prototype._checkLegal = function(selectedCoord, newCoord) {
+   Engine.prototype._checkLegal = function(selectedCoord, newCoord, newColour) {
       var selectedColour = this.positions[selectedCoord].colour;
-      var newColour = this.positions[newCoord].colour;
       if ((this.positions[newCoord] instanceof C.Piece
          && this.tookOwnPiece(selectedColour, newColour))
          || this.tookConsecutiveTurns(selectedColour)
@@ -149,7 +174,7 @@
             this.changeTurn('black');
          }
       }
-      this.publish(Engine.MOVELOG_PROCESSED, this.positions, this.turn, moveLog);
+      this.publish(Engine.MOVELOG_PROCESSED_EVENT, this.positions, this.turn, moveLog);
    };
 
    /**
@@ -165,7 +190,12 @@
    /**
     * @type {string}
     */
-   Engine.MOVELOG_PROCESSED = "moveLogProcessedEvent";
+   Engine.COMPUTER_MOVE_MADE_EVENT = "computerMoveMadeEvent";
+
+   /**
+    * @type {string}
+    */
+   Engine.MOVELOG_PROCESSED_EVENT = "moveLogProcessedEvent";
 
    /**
     * @type {Array}
