@@ -66,8 +66,8 @@
       this.positions[selectedCoord] = {};
    };
 
-   Engine.prototype.changeTurn = function(colour) {
-     this.turn = (colour == 'white') ? 'black' : 'white';
+   Engine.prototype.changeTurn = function(currentColour) {
+     this.turn = (currentColour == 'white') ? 'black' : 'white';
    };
 
    Engine.prototype.buildPositions = function(){
@@ -98,15 +98,15 @@
          selectedCoord = movePair.split(' ')[1].slice(1,3);
          newCoord = movePair.split(' ')[1].slice(4,6);
          this.place(selectedCoord, newCoord);
-         this.changeTurn('black');
+         this.changeTurn('white');
          if (movePair.split(' ')[2]) {
             selectedCoord = movePair.split(' ')[2].slice(1,3);
             newCoord = movePair.split(' ')[2].slice(4,6);
             this.place(selectedCoord, newCoord);
-            this.changeTurn('white');
+            this.changeTurn('black');
          }
       }.bind(this));
-      this.publish(Engine.MOVELOG_PROCESSED, this.positions, this.turn);
+      this.publish(Engine.MOVELOG_PROCESSED, this.positions, this.turn, moveLog);
    };
 
    Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT = "humanMoveDeemedLegalEvent";

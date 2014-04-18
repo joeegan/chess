@@ -61,6 +61,10 @@
             } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
                coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+i;
             }
+            // south east
+            if (newFileIndex > selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
+               coordToCheck = C.Engine.ALPHABET[i+2]+i;
+            }
             clearRoute = !(moveData.positions[coordToCheck] instanceof C.Piece);
             if (!clearRoute) break;
             negativeFileIncrement--;

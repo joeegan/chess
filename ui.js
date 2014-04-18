@@ -90,7 +90,7 @@
       return lan += selectedCoord + operator + newCoord;
    };
 
-   UI.prototype.handlePgnLogProcesed = function(positions){
+   UI.prototype.handleMoveLogProcessed = function(positions){
      this.positions = positions;
       this._drawBoard();
      this._renderPiecesOnBoard();

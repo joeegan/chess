@@ -15,6 +15,10 @@
       this.add(lan, turn);
    };
 
+   MoveLog.prototype.handleMoveLogProcessed = function(positions, turn, log) {
+      this.log = log;
+   };
+
    MoveLog.prototype.add = function(lan, turn) {
       if (turn == "white") {
          this.log.push((this.log.length + 1) +'. ' + lan);
