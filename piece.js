@@ -46,7 +46,7 @@
    };
 
    Piece.prototype.clearRouteDiagonally = function(moveData) {
-      var clearRoute = false;
+      var clearRoute = true;
       var selectedFileIndex = C.Engine.ALPHABET.indexOf(moveData.selectedCoordFile);
       var newFileIndex = C.Engine.ALPHABET.indexOf(moveData.newCoordFile);
       var coordToCheck;
@@ -54,9 +54,10 @@
       var positiveFileIncrement = selectedFileIndex + 1;
       if (moveData.turn == 'white') {
          for (var i = moveData.selectedCoordRow + 1; i < moveData.newCoordRow; i++) {
+            clearRoute = false;
             // north east
             if (newFileIndex > selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[i+2]+i;
+               coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+i;
             // north west
             } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
                coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+i;
@@ -66,7 +67,10 @@
                coordToCheck = C.Engine.ALPHABET[i+2]+i;
             }
             clearRoute = !(moveData.positions[coordToCheck] instanceof C.Piece);
-            if (!clearRoute) break;
+            if (!clearRoute) {
+               console.log('there was a blockage', coordToCheck, moveData.positions[coordToCheck]);
+               break;
+            }
             negativeFileIncrement--;
             positiveFileIncrement++;
          }

@@ -23,6 +23,6 @@
    };
 
    C.Chess = new Chess();
-   C.Chess.engine.processMoveLog(["1. Pa2-a3 Pa7-a6", "2. Pb2-b3 Pb7-b6", "3. Pc2-c3 Pc7-c6", "4. Pd2-d3 Pd7-d6", "5. Pe2-e3 Pe7-e6", "6. Pf2-f3 Pf7-f6", "7. Pg2-g3 Pg7-g6", "8. Ph2-h4 Ph7-h6"]);
+   C.Chess.engine.processMoveLog(["1. Pa2-a3 Pa7-a6", "2. Pb2-b3 Pb7-b6", "3. Pc2-c3 Pc7-c6", "4. Pd2-d3 Pd7-d6", "5. Pe2-e3 Pe7-e6", "6. Pf2-f3 Pf7-f6", "7. Pg2-g3 Pg7-g6", "8. Ph2-h4 Ph7-h6", "9. Pe3-e4 Pd6-d5", "10. Qd1-d2 Pb6-b5", "11. Qd2-d1 Pb5-b4"]);
 
 })();
