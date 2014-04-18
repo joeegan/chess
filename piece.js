@@ -32,7 +32,6 @@
             if (!clearRoute) break;
          }
       }
-
       return clearRoute;
    };
 
@@ -52,19 +51,20 @@
       var coordToCheck;
       var negativeFileIncrement = selectedFileIndex - 1;
       var positiveFileIncrement = selectedFileIndex + 1;
+      var positiveRowIncrement = moveData.selectedCoordRow + 1;
+      var negativeRowIncrement = moveData.selectedCoordRow - 1;
+      var difference = selectedFileIndex > newFileIndex ? selectedFileIndex - newFileIndex : newFileIndex - selectedFileIndex;
       if (moveData.turn == 'white') {
-         for (var i = moveData.selectedCoordRow + 1; i < moveData.newCoordRow; i++) {
+         for (var i = 1; i < difference; i++) {
             clearRoute = false;
-            // north east
             if (newFileIndex > selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+i;
-            // north west
+               coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+positiveRowIncrement; // north east
             } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+i;
-            }
-            // south east
-            if (newFileIndex > selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
-               coordToCheck = C.Engine.ALPHABET[i+2]+i;
+               coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+positiveRowIncrement; // north west
+            } else if (newFileIndex > selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
+               coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+negativeRowIncrement; // south east
+            } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
+               coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+negativeRowIncrement; // south west
             }
             clearRoute = !(moveData.positions[coordToCheck] instanceof C.Piece);
             if (!clearRoute) {
@@ -73,12 +73,12 @@
             }
             negativeFileIncrement--;
             positiveFileIncrement++;
+            negativeRowIncrement--;
+            positiveRowIncrement++;
          }
       }
       return clearRoute;
    };
-
-
 
    Piece.prototype._processMoveData = function(selectedCoord, newCoord, turn, positions){
       return {
