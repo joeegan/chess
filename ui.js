@@ -29,7 +29,7 @@
       this._deselectSquares();
    };
 
-   UI.prototype._selectedSquare = null;
+   UI.prototype._selectedCoord = null;
 
    UI.prototype._squareSize = null;
 
@@ -67,28 +67,38 @@
          pieceName = this.positions[squareName].constructor.name;
          if (this._withinSquare(mouseX, mouseY, squareXY)) {
             var isPiece = this.positions[squareName] instanceof C.Piece;
-            if (!isPiece && !this._selectedSquare) {
+            if (!isPiece && !this._selectedCoord) {
                console.log('empty ' + squareName + ' clicked, no piece selected')
                this._deselectSquares();
-            } else if (this._selectedSquare && squareName === this._selectedSquare) {
+            } else if (this._selectedCoord && squareName === this._selectedCoord) {
                console.log('same square clicked twice', squareName);
                this._deselectSquares();
-            } else if (isPiece && !this._selectedSquare) {
+            } else if (isPiece && !this._selectedCoord) {
                console.log(pieceName, squareName, 'selected');
-               this._selectedSquare = squareName;
-            } else if (!isPiece && this._selectedSquare || isPiece && this._selectedSquare) {
-               operator = isPiece ? 'x' : '-';
-               lan = this._selectedSquare + operator + squareName;
-               console.log(lan);
+               this._selectedCoord = squareName;
+            } else if (!isPiece && this._selectedCoord || isPiece && this._selectedCoord) {
+               lan = this.buildLan(this._selectedCoord, squareName, isPiece);
                this.publish(UI.HUMAN_MOVE_MADE_EVENT, lan, true);
             }
          }
       }
    };
 
+   UI.prototype.buildLan = function(selectedCoord, newCoord, isPieceOnNewCoord){
+      var operator = isPieceOnNewCoord ? 'x' : '-';
+      var lan = this.positions[selectedCoord].constructor.name.slice(0,1);
+      return lan += selectedCoord + operator + newCoord;
+   };
+
+   UI.prototype.handlePgnLogProcesed = function(positions){
+     this.positions = positions;
+      this._drawBoard();
+     this._renderPiecesOnBoard();
+   };
+
    UI.prototype._deselectSquares = function(){
-      console.log('unselecting square', this._selectedSquare);
-      this._selectedSquare = null;
+      console.log('unselecting square', this._selectedCoord);
+      this._selectedCoord = null;
    };
 
    UI.prototype._drawBoard = function(){
