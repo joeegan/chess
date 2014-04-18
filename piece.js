@@ -1,6 +1,6 @@
 (function(){
 
-   // Consider piece factory, rather than seperate pieces
+   // Consider piece factory, rather than separate pieces
 
    'use strict';
 
@@ -138,10 +138,7 @@
    };
 
    Piece.prototype.movedSideways = function(moveData) {
-      if (moveData.selectedCoordRow == moveData.newCoordRow) {
-         return true;
-      }
-      return false;
+      return (moveData.selectedCoordRow == moveData.newCoordRow);
    };
 
    Piece.prototype.colour = null;
