@@ -91,10 +91,10 @@
       this.positions = positions;
    };
 
-   Engine.prototype.processPgnLog = function(pgnLog) {
+   Engine.prototype.processMoveLog = function(moveLog) {
       var selectedCoord;
       var newCoord;
-      pgnLog.forEach(function(movePair, idx) {
+      moveLog.forEach(function(movePair, idx) {
          selectedCoord = movePair.split(' ')[1].slice(1,3);
          newCoord = movePair.split(' ')[1].slice(4,6);
          this.place(selectedCoord, newCoord);
@@ -106,14 +106,14 @@
             this.changeTurn('white');
          }
       }.bind(this));
-      this.publish(Engine.PGN_PROCESSED, this.positions, this.turn);
+      this.publish(Engine.MOVELOG_PROCESSED, this.positions, this.turn);
    };
 
    Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT = "humanMoveDeemedLegalEvent";
 
    Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT = "humanMoveDeemedIllegalEvent";
 
-   Engine.PGN_PROCESSED = "pgnProcessedEvent";
+   Engine.MOVELOG_PROCESSED = "moveLogProcessedEvent";
 
    Engine.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
