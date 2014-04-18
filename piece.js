@@ -11,35 +11,44 @@
 
    Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
       var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
-      return (this.movedBackwards(moveData)
-              || this.movedForwards(moveData)  && this.clearRouteForwards(moveData)
-              || this.movedDiagonally(moveData) && this.clearRouteDiagonally(moveData)
-              || this.movedSideways(moveData)
-      );
+      return ((this.movedBackwards(moveData) || this.movedSideways(moveData) || this.movedForwards(moveData))
+               && this.clearRouteStraight(moveData))
+             || this.movedDiagonally(moveData) && this.clearRouteDiagonally(moveData);
    };
 
-   Piece.prototype.clearRouteForwards = function(moveData) {
+   Piece.prototype.clearRouteStraight = function(moveData) {
       var clearRoute = true;
-      if (moveData.turn == 'white') {
+      var selectedFileIndex = C.Engine.ALPHABET.indexOf(moveData.selectedCoordFile);
+      var newFileIndex = C.Engine.ALPHABET.indexOf(moveData.newCoordFile);
+      if (moveData.newCoordRow > moveData.selectedCoordRow) { // north
          for (var i = moveData.selectedCoordRow + 1; i < moveData.newCoordRow; i++) {
-            clearRoute = this.checkStraightRoute(moveData, i);
+            clearRoute = this.checkForPiece(moveData.selectedCoordFile + i, moveData);
             if (!clearRoute) break;
          }
-      }
-      if (moveData.turn == 'black') {
+      } else if (moveData.newCoordRow < moveData.selectedCoordRow) { // south
          for (var i = moveData.selectedCoordRow - 1; i > moveData.newCoordRow; i--) {
-            clearRoute = this.checkStraightRoute(moveData, i);
+            clearRoute = this.checkForPiece(moveData.selectedCoordFile + i, moveData);
+            if (!clearRoute) break;
+         }
+      } else if (newFileIndex > selectedFileIndex) { // east
+         for (var i = selectedFileIndex + 1; i < newFileIndex; i++) {
+            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRow, moveData);
+            if (!clearRoute) break;
+         }
+      } else if (newFileIndex < selectedFileIndex) { // west
+         for (var i = selectedFileIndex - 1; i > newFileIndex; i--) {
+            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRow, moveData);
             if (!clearRoute) break;
          }
       }
       return clearRoute;
    };
 
-   Piece.prototype.checkStraightRoute = function(moveData, i) {
+   Piece.prototype.checkForPiece = function(coord, moveData) {
       var clearRoute = true;
-      if (moveData.positions[moveData.selectedCoordFile + i] instanceof Piece) {
+      if (moveData.positions[coord] instanceof Piece) {
          clearRoute = false;
-         console.log('there was a blockage', moveData.selectedCoordFile + i, moveData.positions[moveData.selectedCoordFile + i]);
+         console.log('there was a blockage', coord, moveData.positions[coord]);
       }
       return clearRoute;
    };

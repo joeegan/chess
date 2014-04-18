@@ -12,7 +12,7 @@
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
       var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
-      return (coordFileDifference == 1 && coordRowDifference == 1);
+      return (coordFileDifference <= 1 && coordRowDifference <= 1);
    };
 
    King.prototype.BLACK_UNICODE = '\u265A';

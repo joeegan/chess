@@ -10,7 +10,7 @@
    Pawn.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
       var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
       return (this.movedDiagonally(moveData)
-         || this.movedForwards(moveData) && this.clearRouteForwards(moveData));
+         || this.movedForwards(moveData) && this.clearRouteStraight(moveData));
    };
 
    Pawn.prototype.movedForwards = function(moveData) {
@@ -59,6 +59,10 @@
       } else {
          return false;
       }
+   };
+
+   Pawn.prototype.clearRouteStraight = function(moveData) {
+      return !(moveData.positions[moveData.newCoord] instanceof C.Piece);
    };
 
    Pawn.prototype.BLACK_UNICODE = '\u265F';
