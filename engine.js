@@ -33,7 +33,7 @@
    Engine.prototype.handleMoveAttempted = function(lan) {
       var selectedCoord = lan.match(/[a-z]\d/)[0];
       var newCoord = lan.match(/[a-z]\d$/)[0];
-      if (this._checkLegal(selectedCoord, newCoord)) {
+      if (this.checkLegal(selectedCoord, newCoord)) {
          this.place(selectedCoord, newCoord);
          this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, lan, this.turn);
          this.changeTurn(this.positions[newCoord].colour);
@@ -47,9 +47,10 @@
     * @param {String} newCoord e.g. e5
     * @returns {boolean} Whether the rules of chess permit the attempted move.
     */
-   Engine.prototype._checkLegal = function(selectedCoord, newCoord) {
+   Engine.prototype.checkLegal = function(selectedCoord, newCoord) {
       var selectedColour = this.positions[selectedCoord].colour;
       var newColour = this.positions[newCoord].colour;
+      console.log(this.positions['e4']);
       if ((this.positions[newCoord] instanceof C.Piece
          && this.tookOwnPiece(selectedColour, newColour))
          || this.tookConsecutiveTurns(selectedColour)
