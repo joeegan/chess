@@ -18,7 +18,7 @@
     * @param {String} lan e.g. Rg4xe4
     * @param {String} turn i.e. 'white' or 'black'
     */
-   MoveLog.prototype.handleMove = function(positions, lan, turn) {
+   MoveLog.prototype.handleMoveDeemedLegal = function(positions, lan, turn) {
       this.add(lan, turn);
    };
 

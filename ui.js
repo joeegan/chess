@@ -91,18 +91,9 @@
    };
 
    UI.prototype.handleMoveLogProcessed = function(positions){
-      this.positions = positions;
+     this.positions = positions;
       this._drawBoard();
-      this._renderPiecesOnBoard();
-   };
-
-   UI.prototype.handleComputerMoveMade = function(positions, lan){
-      this.positions = positions;
-      setTimeout(function(){
-         this._drawBoard();
-         this._renderPiecesOnBoard();
-      }.bind(this), 250);
-      this.publish(UI.COMPUTER_MOVE_RENDERED_EVENT, lan);
+     this._renderPiecesOnBoard();
    };
 
    UI.prototype._deselectSquares = function(){
@@ -181,8 +172,6 @@
    UI.MEN_FONT = 'bold 54px Arial';
 
    UI.HUMAN_MOVE_MADE_EVENT = "humanMadeMoveEvent";
-
-   UI.COMPUTER_MOVE_RENDERED_EVENT = "computerMoveRenderedEvent";
 
    C.UI = UI;
 
