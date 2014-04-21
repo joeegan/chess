@@ -1,6 +1,6 @@
 describe('Queen', function() {
 
-   it('Can move straght lines', function() {
+   it('Can move straight lines', function() {
       expect(engine.checkLegal('d1', 'e1')).toBe(true);
       engine.makeMove('Qd1-e1');
       engine.makeMove('Pd8-e7');

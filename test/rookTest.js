@@ -1,6 +1,6 @@
 describe('Rook', function() {
 
-   it('Can move straght lines', function() {
+   it('Can move straight lines', function() {
       expect(engine.checkLegal('a1', 'a5')).toBe(true);
       engine.makeMove('Ra1-a5');
       expect(engine.checkLegal('h8', 'f8')).toBe(true);
