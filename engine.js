@@ -30,7 +30,7 @@
    /**
     * @param lan e.g. 'Pa2-a3'
     */
-   Engine.prototype.handleMoveAttempted = function(lan) {
+   Engine.prototype.makeMove = function(lan) {
       var selectedCoord = lan.match(/[a-z]\d/)[0];
       var newCoord = lan.match(/[a-z]\d$/)[0];
       if (this.checkLegal(selectedCoord, newCoord)) {
@@ -50,7 +50,6 @@
    Engine.prototype.checkLegal = function(selectedCoord, newCoord) {
       var selectedColour = this.positions[selectedCoord].colour;
       var newColour = this.positions[newCoord].colour;
-      console.log(this.positions['e4']);
       if ((this.positions[newCoord] instanceof C.Piece
          && this.tookOwnPiece(selectedColour, newColour))
          || this.tookConsecutiveTurns(selectedColour)

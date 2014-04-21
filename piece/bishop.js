@@ -8,7 +8,8 @@
    C.extend(Bishop, C.Piece);
 
    Bishop.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
-
+      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
+      return this.movedDiagonally(moveData) && this.clearRouteDiagonally(moveData);
    };
 
    Bishop.prototype.BLACK_UNICODE = '\u265D';

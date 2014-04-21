@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'namespace.js',
-      'observer.js',
+      'lib/observer.js',
       'engine.js',
       'extend.js',
       'piece/piece.js',
