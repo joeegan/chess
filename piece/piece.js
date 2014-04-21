@@ -20,24 +20,24 @@
       var clearRoute = true;
       var selectedFileIndex = C.Engine.ALPHABET.indexOf(moveData.selectedCoordFile);
       var newFileIndex = C.Engine.ALPHABET.indexOf(moveData.newCoordFile);
-      if (moveData.newCoordRow > moveData.selectedCoordRow) { // north
-         for (var i = moveData.selectedCoordRow + 1; i < moveData.newCoordRow; i++) {
+      if (moveData.newCoordRank > moveData.selectedCoordRank) { // north
+         for (var i = moveData.selectedCoordRank + 1; i < moveData.newCoordRank; i++) {
             clearRoute = this.checkForPiece(moveData.selectedCoordFile + i, moveData);
             if (!clearRoute) break;
          }
-      } else if (moveData.newCoordRow < moveData.selectedCoordRow) { // south
-         for (var i = moveData.selectedCoordRow - 1; i > moveData.newCoordRow; i--) {
+      } else if (moveData.newCoordRank < moveData.selectedCoordRank) { // south
+         for (var i = moveData.selectedCoordRank - 1; i > moveData.newCoordRank; i--) {
             clearRoute = this.checkForPiece(moveData.selectedCoordFile + i, moveData);
             if (!clearRoute) break;
          }
       } else if (newFileIndex > selectedFileIndex) { // east
          for (var i = selectedFileIndex + 1; i < newFileIndex; i++) {
-            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRow, moveData);
+            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRank, moveData);
             if (!clearRoute) break;
          }
       } else if (newFileIndex < selectedFileIndex) { // west
          for (var i = selectedFileIndex - 1; i > newFileIndex; i--) {
-            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRow, moveData);
+            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRank, moveData);
             if (!clearRoute) break;
          }
       }
@@ -60,19 +60,19 @@
       var coordToCheck;
       var negativeFileIncrement = selectedFileIndex - 1;
       var positiveFileIncrement = selectedFileIndex + 1;
-      var positiveRowIncrement = moveData.selectedCoordRow + 1;
-      var negativeRowIncrement = moveData.selectedCoordRow - 1;
+      var positiveRankIncrement = moveData.selectedCoordRank + 1;
+      var negativeRankIncrement = moveData.selectedCoordRank - 1;
       var difference = selectedFileIndex > newFileIndex ? selectedFileIndex - newFileIndex : newFileIndex - selectedFileIndex;
       for (var i = 1; i < difference; i++) {
          clearRoute = false;
-         if (newFileIndex > selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-            coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+positiveRowIncrement; // north east
-         } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow > moveData.selectedCoordRow) {
-            coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+positiveRowIncrement; // north west
-         } else if (newFileIndex > selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
-            coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+negativeRowIncrement; // south east
-         } else if (newFileIndex < selectedFileIndex && moveData.newCoordRow < moveData.selectedCoordRow) {
-            coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+negativeRowIncrement; // south west
+         if (newFileIndex > selectedFileIndex && moveData.newCoordRank > moveData.selectedCoordRank) {
+            coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+positiveRankIncrement; // north east
+         } else if (newFileIndex < selectedFileIndex && moveData.newCoordRank > moveData.selectedCoordRank) {
+            coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+positiveRankIncrement; // north west
+         } else if (newFileIndex > selectedFileIndex && moveData.newCoordRank < moveData.selectedCoordRank) {
+            coordToCheck = C.Engine.ALPHABET[positiveFileIncrement]+negativeRankIncrement; // south east
+         } else if (newFileIndex < selectedFileIndex && moveData.newCoordRank < moveData.selectedCoordRank) {
+            coordToCheck = C.Engine.ALPHABET[negativeFileIncrement]+negativeRankIncrement; // south west
          }
          clearRoute = !(moveData.positions[coordToCheck] instanceof C.Piece);
          if (!clearRoute) {
@@ -81,8 +81,8 @@
          }
          negativeFileIncrement--;
          positiveFileIncrement++;
-         negativeRowIncrement--;
-         positiveRowIncrement++;
+         negativeRankIncrement--;
+         positiveRankIncrement++;
       }
       return clearRoute;
    };
@@ -91,10 +91,10 @@
       return {
          selectedCoord: selectedCoord,
          newCoord: newCoord,
-         selectedCoordRow: +selectedCoord.slice(1),
+         selectedCoordRank: +selectedCoord.slice(1),
          selectedCoordFile: selectedCoord.slice(0,1),
          newCoordFile: newCoord.slice(0,1),
-         newCoordRow: +newCoord.slice(1),
+         newCoordRank: +newCoord.slice(1),
          turn: turn,
          positions: positions
       }
@@ -102,10 +102,10 @@
 
    Piece.prototype.movedBackwards = function(moveData) {
       if ((moveData.turn == 'white'
-           && moveData.newCoordRow < moveData.selectedCoordRow
+           && moveData.newCoordRank < moveData.selectedCoordRank
            && moveData.newCoordFile == moveData.selectedCoordFile)
       || (moveData.turn == 'black'
-          && moveData.newCoordRow > moveData.selectedCoordRow
+          && moveData.newCoordRank > moveData.selectedCoordRank
           && moveData.newCoordFile == moveData.selectedCoordFile)) {
          console.log('move was backwards');
          return true;
@@ -115,10 +115,10 @@
 
    Piece.prototype.movedForwards = function(moveData) {
       if ((moveData.turn == 'white'
-         && moveData.newCoordRow > moveData.selectedCoordRow
+         && moveData.newCoordRank > moveData.selectedCoordRank
          && moveData.newCoordFile == moveData.selectedCoordFile)
          || (moveData.turn == 'black'
-         && moveData.newCoordRow < moveData.selectedCoordRow
+         && moveData.newCoordRank < moveData.selectedCoordRank
          && moveData.newCoordFile == moveData.selectedCoordFile)) {
          console.log('move was forwards');
          return true;
@@ -129,8 +129,8 @@
    Piece.prototype.movedDiagonally = function(moveData) {
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
-      var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
-      if (coordFileDifference == coordRowDifference) {
+      var coordRankDifference = Math.abs(moveData.selectedCoordRank - moveData.newCoordRank);
+      if (coordFileDifference == coordRankDifference) {
          console.log('diagonal move attempted');
          return true;
       }
@@ -138,7 +138,7 @@
    };
 
    Piece.prototype.movedSideways = function(moveData) {
-      return (moveData.selectedCoordRow == moveData.newCoordRow);
+      return (moveData.selectedCoordRank == moveData.newCoordRank);
    };
 
    Piece.prototype.colour = null;

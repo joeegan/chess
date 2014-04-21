@@ -111,19 +111,19 @@
       var piece;
       var positions = {};
 
-      for (var i = 0; i < Engine.SQUARES_PER_ROW; i++) {
-         for (var x = 0; x < Engine.SQUARES_PER_ROW; x++) {
-            positions[Engine.ALPHABET[x] + (Engine.SQUARES_PER_ROW-i)] = {}
+      for (var i = 0; i < Engine.SQUARES_PER_RANK; i++) {
+         for (var x = 0; x < Engine.SQUARES_PER_RANK; x++) {
+            positions[Engine.ALPHABET[x] + (Engine.SQUARES_PER_RANK-i)] = {}
          }
       }
 
-      for (var i = 0; i < Engine.SQUARES_PER_ROW; i++) {
+      for (var i = 0; i < Engine.SQUARES_PER_RANK; i++) {
          positions[Engine.ALPHABET[i] + 2] = new C.Pawn('white');
-         positions[Engine.ALPHABET[i] + (Engine.SQUARES_PER_ROW - 1)] = new C.Pawn('black');
+         positions[Engine.ALPHABET[i] + (Engine.SQUARES_PER_RANK - 1)] = new C.Pawn('black');
          piece = new C[Engine.PIECE_ORDER[i]]('white');
          positions[Engine.ALPHABET[i] + 1] = piece;
          piece = new C[Engine.PIECE_ORDER[i]]('black');
-         positions[Engine.ALPHABET[i] + Engine.SQUARES_PER_ROW] = piece;
+         positions[Engine.ALPHABET[i] + Engine.SQUARES_PER_RANK] = piece;
       }
       this.positions = positions;
    };
@@ -180,7 +180,7 @@
    /**
     * @type {Array}
     */
-   Engine.SQUARES_PER_ROW = 8;
+   Engine.SQUARES_PER_RANK = 8;
 
    C.Engine = Engine;
 

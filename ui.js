@@ -46,10 +46,10 @@
 
    // Consider merging with _drawSquares
    UI.prototype._buildCoordMapping = function(){
-      this._squareSize = this._canvasW/UI.SQUARES_PER_ROW;
-      for (var y = 0; y < UI.SQUARES_PER_ROW; y++) {
-         for (var x = 0; x < UI.SQUARES_PER_ROW; x++) {
-            this._coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_ROW-y)] = {
+      this._squareSize = this._canvasW/UI.SQUARES_PER_RANK;
+      for (var y = 0; y < UI.SQUARES_PER_RANK; y++) {
+         for (var x = 0; x < UI.SQUARES_PER_RANK; x++) {
+            this._coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_RANK-y)] = {
                x: x*this._squareSize,
                y: y*this._squareSize,
                colour: this._squareColorResolver(x, y)
@@ -120,7 +120,7 @@
    };
 
    UI.prototype._renderPiecesOnBoard = function() {
-      this._squareSize = this._canvasW/C.Engine.SQUARES_PER_ROW;
+      this._squareSize = this._canvasW/C.Engine.SQUARES_PER_RANK;
       for (var coord in this.positions) {
          var piece = this.positions[coord];
          this._place(piece.unicode, coord);
@@ -137,9 +137,9 @@
 
    UI.prototype._drawSquares = function(){
       var colour;
-      this._squareSize = this._canvasW/C.Engine.SQUARES_PER_ROW;
-      for (var y=0; y<C.Engine.SQUARES_PER_ROW; y++) {
-         for (var x=0; x<C.Engine.SQUARES_PER_ROW; x++) {
+      this._squareSize = this._canvasW/C.Engine.SQUARES_PER_RANK;
+      for (var y=0; y<C.Engine.SQUARES_PER_RANK; y++) {
+         for (var x=0; x<C.Engine.SQUARES_PER_RANK; x++) {
             colour = this._squareColorResolver(x, y);
             this._ctx.fillStyle = colour;
             this._ctx.lineWidth = 1;
@@ -161,7 +161,7 @@
 
    UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
-   UI.SQUARES_PER_ROW = 8;
+   UI.SQUARES_PER_RANK = 8;
 
    UI.DARK_SQUARE_COLOR = '#B58863';
 

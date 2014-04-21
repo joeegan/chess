@@ -11,8 +11,8 @@
       var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
-      var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
-      return (coordFileDifference <= 1 && coordRowDifference <= 1);
+      var coordRankDifference = Math.abs(moveData.selectedCoordRank - moveData.newCoordRank);
+      return (coordFileDifference <= 1 && coordRankDifference <= 1);
    };
 
    King.prototype.BLACK_UNICODE = '\u265A';

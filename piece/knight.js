@@ -11,9 +11,9 @@
       var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
-      var coordRowDifference = Math.abs(moveData.selectedCoordRow - moveData.newCoordRow);
-      if (coordFileDifference == 1 && coordRowDifference == 2
-          || coordFileDifference == 2 && coordRowDifference == 1) {
+      var coordRankDifference = Math.abs(moveData.selectedCoordRank - moveData.newCoordRank);
+      if (coordFileDifference == 1 && coordRankDifference == 2
+          || coordFileDifference == 2 && coordRankDifference == 1) {
          return true;
       }
       return false;
