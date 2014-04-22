@@ -1,7 +1,6 @@
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
-var notify = require('gulp-notify');
 
 gulp.task('default', function() {
    gulp.src([
@@ -17,6 +16,5 @@ gulp.task('default', function() {
          ])
       .pipe(uglify())
       .pipe(concat("chess.js"))
-      .pipe(gulp.dest('dist'))
-      .pipe(notify({ message: "Javascript is now uglified and compressed"}));
+      .pipe(gulp.dest('dist'));
 });
