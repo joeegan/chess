@@ -16,6 +16,10 @@
   "devDependencies": {
     "karma": ">=0.12.9",
     "karma-phantomjs-launcher": ">=0.1.4",
-    "karma-jasmine": "^0.1.5"
+    "karma-jasmine": "^0.1.5",
+    "gulp": "^3.6.1",
+    "gulp-uglify": "^0.2.1",
+    "gulp-concat": "^2.2.0",
+    "gulp-notify": "^1.2.5"
   }
 }
