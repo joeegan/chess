@@ -1,20 +1,20 @@
 {
-   "name": "Chess",
-   "version": "0.0.0",
-   "description": "Chess",
-   "scripts": {
-      "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
-   },
-   "repository": {
-      "type": "git",
-      "url": "https://github.com/joeegan/chess.git"
-   },
-   "author": "Joe Egan",
-   "bugs": {
-      "url": "https://github.com/joeegan/chess/issues"
-   },
-   "devDependencies": {
-      "karma": "0.11.14",
-      "karma-phantomjs-launcher": "0.1.4"
-   }
+  "name": "Chess",
+  "version": "0.0.0",
+  "description": "Chess",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joeegan/chess.git"
+  },
+  "author": "Joe Egan",
+  "bugs": {
+    "url": "https://github.com/joeegan/chess/issues"
+  },
+  "devDependencies": {
+    "karma": ">=0.12.9",
+    "karma-phantomjs-launcher": ">=0.1.4"
+  }
 }
