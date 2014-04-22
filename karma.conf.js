@@ -15,20 +15,18 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'namespace.js',
-      'lib/observer.js',
-      'engine.js',
-      'extend.js',
-      'piece/piece.js',
-      'piece/*.js',
+      'src/namespace.js',
+      'src/lib/observer.js',
+      'src/engine.js',
+      'src/extend.js',
+      'src/piece/piece.js',
+      'src/piece/*.js',
       'test/*.js'
     ],
 
 
     // list of files to exclude
-    exclude: [
-      
-    ],
+    exclude: [],
 
 
     // preprocess matching files before serving them to the browser
