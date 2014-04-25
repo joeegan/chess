@@ -36,6 +36,8 @@
 
    /**
     * Add a move to the movelog.
+    * @param {String} turn i.e. 'white' or 'black'
+    * @param {String} lan e.g. Rg4xe4
     */
    MoveLog.prototype.add = function(lan, turn) {
       if (turn == "white") {
