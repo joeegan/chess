@@ -133,13 +133,11 @@
          newEl.style.position = 'absolute';
          var left = this._coordMapping[coords].x;
          var top = this._coordMapping[coords].y;
-         var style = "position: absolute; font-size: 54px; color: #222;";
-         style += "left:" +  left + "px;";
+         var style = "left:" +  left + "px;";
          style += "top:" + top  + "px;";
          style += "width:" + this._squareSize  + "px;";
          style += "height:" + this._squareSize  + "px;";
          style += "line-height:" + this._squareSize  + "px;";
-         style += "text-align: center;";
          newEl.setAttribute('style', style);
          newEl.innerHTML = unicode || '';
          newEl.id = coords;
