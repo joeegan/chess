@@ -35,10 +35,10 @@
       var newCoord = lan.match(/[a-z]\d$/)[0];
       if (this.checkLegal(selectedCoord, newCoord)) {
          this.place(selectedCoord, newCoord);
-         this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, lan, this.turn);
+         this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, lan, this.turn, selectedCoord, newCoord);
          this.changeTurn(this.positions[newCoord].colour);
       } else {
-         this.publish(Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.positions);
+         this.publish(Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.positions, selectedCoord, newCoord);
       }
    };
 
