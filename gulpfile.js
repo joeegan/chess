@@ -4,15 +4,15 @@ var concat = require('gulp-concat');
 
 gulp.task('default', function() {
    gulp.src([
-         'lib/*.js',
-         './namespace.js',
-         './extend.js',
-         './piece/piece.js',
-         './piece/*.js',
-         './engine.js',
-         './movelog.js',
-         './ui.js',
-         './chess.js',
+         'src/lib/*.js',
+         'src/namespace.js',
+         'src/extend.js',
+         'src/piece/piece.js',
+         'src/piece/*.js',
+         'src/engine.js',
+         'src/movelog.js',
+         'src/ui.js',
+         'src/chess.js',
          ])
       .pipe(uglify())
       .pipe(concat("chess.js"))
