@@ -10,6 +10,7 @@
     * the developer can copy the movelog out of the developer tools console and pass that log to the engine with C.Chess.engine.processMoveLog.
     */
    function MoveLog(){
+      this.log = [];
    }
 
    /**
@@ -46,9 +47,9 @@
    };
 
    /**
-    * @type {Array}
+    * @type {String[]}
     */
-   MoveLog.prototype.log = [];
+   MoveLog.prototype.log = null;
 
    C.MoveLog = MoveLog;
 
