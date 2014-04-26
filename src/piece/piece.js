@@ -10,41 +10,41 @@
    }
 
    Piece.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
-      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
-      return ((this.movedBackwards(moveData) || this.movedSideways(moveData) || this.movedForwards(moveData))
-               && this.clearRouteStraight(moveData))
-             || this.movedDiagonally(moveData) && this.clearRouteDiagonally(moveData);
+      var moveData = Piece.processMoveData(selectedCoord, newCoord, turn, positions);
+      return ((Piece.movedBackwards(moveData) || Piece.movedSideways(moveData) || Piece.movedForwards(moveData))
+               && Piece.clearRouteStraight(moveData))
+             || Piece.movedDiagonally(moveData) && Piece.clearRouteDiagonally(moveData);
    };
 
-   Piece.prototype.clearRouteStraight = function(moveData) {
+   Piece.clearRouteStraight = function(moveData) {
       var clearRoute = true;
       var selectedFileIndex = C.Engine.ALPHABET.indexOf(moveData.selectedCoordFile);
       var newFileIndex = C.Engine.ALPHABET.indexOf(moveData.newCoordFile);
       if (moveData.newCoordRank > moveData.selectedCoordRank) { // north
          for (var i = moveData.selectedCoordRank + 1; i < moveData.newCoordRank; i++) {
-            clearRoute = this.checkForPiece(moveData.selectedCoordFile + i, moveData);
+            clearRoute = Piece.checkForPiece(moveData.selectedCoordFile + i, moveData);
             if (!clearRoute) break;
          }
       } else if (moveData.newCoordRank < moveData.selectedCoordRank) { // south
          for (var i = moveData.selectedCoordRank - 1; i > moveData.newCoordRank; i--) {
-            clearRoute = this.checkForPiece(moveData.selectedCoordFile + i, moveData);
+            clearRoute = Piece.checkForPiece(moveData.selectedCoordFile + i, moveData);
             if (!clearRoute) break;
          }
       } else if (newFileIndex > selectedFileIndex) { // east
          for (var i = selectedFileIndex + 1; i < newFileIndex; i++) {
-            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRank, moveData);
+            clearRoute = Piece.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRank, moveData);
             if (!clearRoute) break;
          }
       } else if (newFileIndex < selectedFileIndex) { // west
          for (var i = selectedFileIndex - 1; i > newFileIndex; i--) {
-            clearRoute = this.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRank, moveData);
+            clearRoute = Piece.checkForPiece(C.Engine.ALPHABET[i] + moveData.selectedCoordRank, moveData);
             if (!clearRoute) break;
          }
       }
       return clearRoute;
    };
 
-   Piece.prototype.checkForPiece = function(coord, moveData) {
+   Piece.checkForPiece = function(coord, moveData) {
       var clearRoute = true;
       if (moveData.positions[coord] instanceof Piece) {
          clearRoute = false;
@@ -53,7 +53,7 @@
       return clearRoute;
    };
 
-   Piece.prototype.clearRouteDiagonally = function(moveData) {
+   Piece.clearRouteDiagonally = function(moveData) {
       var clearRoute = true;
       var selectedFileIndex = C.Engine.ALPHABET.indexOf(moveData.selectedCoordFile);
       var newFileIndex = C.Engine.ALPHABET.indexOf(moveData.newCoordFile);
@@ -87,7 +87,7 @@
       return clearRoute;
    };
 
-   Piece.prototype._processMoveData = function(selectedCoord, newCoord, turn, positions){
+   Piece.processMoveData = function(selectedCoord, newCoord, turn, positions){
       return {
          selectedCoord: selectedCoord,
          newCoord: newCoord,
@@ -100,7 +100,7 @@
       }
    };
 
-   Piece.prototype.movedBackwards = function(moveData) {
+   Piece.movedBackwards = function(moveData) {
       if ((moveData.turn == 'white'
            && moveData.newCoordRank < moveData.selectedCoordRank
            && moveData.newCoordFile == moveData.selectedCoordFile)
@@ -113,7 +113,7 @@
       return false;
    };
 
-   Piece.prototype.movedForwards = function(moveData) {
+   Piece.movedForwards = function(moveData) {
       if ((moveData.turn == 'white'
          && moveData.newCoordRank > moveData.selectedCoordRank
          && moveData.newCoordFile == moveData.selectedCoordFile)
@@ -126,7 +126,7 @@
       return false;
    };
 
-   Piece.prototype.movedDiagonally = function(moveData) {
+   Piece.movedDiagonally = function(moveData) {
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
       var coordRankDifference = Math.abs(moveData.selectedCoordRank - moveData.newCoordRank);
@@ -137,7 +137,7 @@
       return false;
    };
 
-   Piece.prototype.movedSideways = function(moveData) {
+   Piece.movedSideways = function(moveData) {
       return (moveData.selectedCoordRank == moveData.newCoordRank);
    };
 

@@ -65,7 +65,7 @@
           squareXY, pieceName, squareName, piece, operator, lan;
       for (squareName in this.positions) {
          squareXY = this._coordMapping[squareName];
-         pieceName = this.positions[squareName].constructor.name;
+         pieceName = this.positions[squareName].notation;
          if (this._withinSquare(mouseX, mouseY, squareXY)) {
             var isPiece = this.positions[squareName] instanceof C.Piece;
             if (!isPiece && !this._selectedCoord) {
@@ -89,7 +89,7 @@
 
    UI.prototype.buildLan = function(selectedCoord, newCoord, isPieceOnNewCoord){
       var operator = isPieceOnNewCoord ? 'x' : '-';
-      var lan = this.positions[selectedCoord].constructor.name.slice(0,1);
+      var lan = this.positions[selectedCoord].notation;
       return lan += selectedCoord + operator + newCoord;
    };
 

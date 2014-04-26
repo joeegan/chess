@@ -8,7 +8,7 @@
    C.extend(Knight, C.Piece);
 
    Knight.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
-      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
+      var moveData = C.Piece.processMoveData(selectedCoord, newCoord, turn, positions);
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
       var coordRankDifference = Math.abs(moveData.selectedCoordRank - moveData.newCoordRank);
@@ -22,6 +22,8 @@
    Knight.prototype.BLACK_UNICODE = '\u265E';
 
    Knight.prototype.WHITE_UNICODE = '\u2658';
+
+   Knight.prototype.notation = 'N';
 
    C.Knight = Knight;
 

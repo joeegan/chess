@@ -8,12 +8,12 @@
    C.extend(Pawn, C.Piece);
 
    Pawn.prototype.checkLegal = function(selectedCoord, newCoord, turn, positions) {
-      var moveData = this._processMoveData(selectedCoord, newCoord, turn, positions);
-      return (this.movedDiagonally(moveData)
-         || this.movedForwards(moveData) && this.clearRouteStraight(moveData));
+      var moveData = C.Piece.processMoveData(selectedCoord, newCoord, turn, positions);
+      return (Pawn.movedDiagonally(moveData)
+         || Pawn.movedForwards(moveData) && Pawn.clearRouteStraight(moveData));
    };
 
-   Pawn.prototype.movedForwards = function(moveData) {
+   Pawn.movedForwards = function(moveData) {
       // Pawns multimove exception is white row 2 - 4, black row 7 - 5.
       if (moveData.turn == 'white'
           && moveData.selectedCoordRank == 2
@@ -40,7 +40,7 @@
       }
    };
 
-   Pawn.prototype.movedDiagonally = function(moveData) {
+   Pawn.movedDiagonally = function(moveData) {
       // Pawns are allowed to move diagonally one square forward when there is a piece in that coord.
       var ALPHABET = C.Engine.ALPHABET;
       var coordFileDifference = Math.abs(ALPHABET.indexOf(moveData.selectedCoordFile) - ALPHABET.indexOf(moveData.newCoordFile));
@@ -61,13 +61,15 @@
       }
    };
 
-   Pawn.prototype.clearRouteStraight = function(moveData) {
+   Pawn.clearRouteStraight = function(moveData) {
       return !(moveData.positions[moveData.newCoord] instanceof C.Piece);
    };
 
    Pawn.prototype.BLACK_UNICODE = '\u265F';
 
    Pawn.prototype.WHITE_UNICODE = '\u2659';
+
+   Pawn.prototype.notation = 'P';
 
    C.Pawn = Pawn;
 

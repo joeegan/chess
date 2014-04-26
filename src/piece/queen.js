@@ -13,6 +13,8 @@
 
    Queen.prototype.WHITE_UNICODE = '\u2655';
 
+   Queen.prototype.notation = 'Q';
+
    C.Queen = Queen;
 
 })();
