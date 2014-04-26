@@ -13,27 +13,6 @@
 
    UI.prototype = Object.create(Observer.prototype);
 
-   UI.prototype._initialiseEvents = function() {
-      this._boardEl.addEventListener('click', this._handleBoardClick.bind(this), false);
-   };
-
-   UI.prototype.handleMoveDeemedLegal = function(positions, lan, turn, selectedCoord, newCoord) {
-      this._renderPiecesOnBoard();
-      this._deselectSquares();
-      var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
-      divs.forEach(function(div) {
-         div.className = '';
-      });
-      document.getElementById(selectedCoord).className = 'selected';
-      document.getElementById(newCoord).className = 'selected';
-   };
-
-   UI.prototype.handleMoveDeemedIllegal = function(positions, selectedCoord, newCoord) {
-      document.getElementById(selectedCoord).className = '';
-      document.getElementById(newCoord).className = '';
-      this._deselectSquares();
-   };
-
    UI.prototype._selectedCoord = null;
 
    UI.prototype._squareSize = null;
@@ -45,15 +24,41 @@
     */
    UI.prototype._coordMapping = {};
 
+   UI.prototype._initialiseEvents = function() {
+      this._boardEl.addEventListener('click', this._handleBoardClick.bind(this), false);
+   };
+
+   UI.prototype.handleMoveDeemedLegal = function(positions, lan, turn, selectedCoord, newCoord) {
+      this._renderPiecesOnBoard();
+      this._deselectSquares();
+      var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
+      divs.forEach(function(div) {
+         div.className = '';
+      });
+      this._getEl(selectedCoord).className = 'selected';
+      this._getEl(newCoord).className = 'selected';
+   };
+
+   UI.prototype.handleMoveDeemedIllegal = function(positions, selectedCoord, newCoord) {
+      this._getEl(selectedCoord).className = '';
+      this._getEl(newCoord).className = '';
+      this._deselectSquares();
+   };
+
+   UI.prototype.handleMoveLogProcessed = function(positions){
+      this.positions = positions;
+      this._drawBoard();
+      this._renderPiecesOnBoard();
+   };
+
    // Consider merging with _drawSquares
    UI.prototype._buildCoordMapping = function(){
       this._squareSize = Math.floor(this._boardEl.getAttribute('width')/UI.SQUARES_PER_RANK);
       for (var y = 0; y < UI.SQUARES_PER_RANK; y++) {
          for (var x = 0; x < UI.SQUARES_PER_RANK; x++) {
             this._coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_RANK-y)] = {
-               x: Math.floor(x*this._squareSize + this._borderWidth),
-               y: Math.floor(y*this._squareSize + this._borderWidth),
-               colour: this._squareColorResolver(x, y)
+               x: Math.floor(x*this._squareSize),
+               y: Math.floor(y*this._squareSize)
             };
          }
       }
@@ -62,7 +67,7 @@
    UI.prototype._handleBoardClick = function(ev){
       var mouseX = ev.pageX - this._boardEl.offsetLeft,
           mouseY = ev.pageY - this._boardEl.offsetTop,
-          squareXY, pieceName, squareName, piece, operator, lan;
+          squareXY, pieceName, squareName, piece, lan;
       for (squareName in this.positions) {
          squareXY = this._coordMapping[squareName];
          pieceName = this.positions[squareName].notation;
@@ -77,26 +82,20 @@
             } else if (isPiece && !this._selectedCoord) {
                console.log(pieceName, squareName, 'selected');
                this._selectedCoord = squareName;
-               document.getElementById(this._selectedCoord).className = 'selected';
+               this._getEl(this._selectedCoord).className = 'selected';
             } else if (!isPiece && this._selectedCoord || isPiece && this._selectedCoord) {
-               lan = this.buildLan(this._selectedCoord, squareName, isPiece);
-               document.getElementById(squareName).className = 'selected';
+               lan = this._buildLan(this._selectedCoord, squareName, isPiece);
+               this._getEl(squareName).className = 'selected';
                this.publish(UI.HUMAN_MOVE_MADE_EVENT, lan, true);
             }
          }
       }
    };
 
-   UI.prototype.buildLan = function(selectedCoord, newCoord, isPieceOnNewCoord){
+   UI.prototype._buildLan = function(selectedCoord, newCoord, isPieceOnNewCoord){
       var operator = isPieceOnNewCoord ? 'x' : '-';
       var lan = this.positions[selectedCoord].notation;
       return lan += selectedCoord + operator + newCoord;
-   };
-
-   UI.prototype.handleMoveLogProcessed = function(positions){
-     this.positions = positions;
-      this._drawBoard();
-     this._renderPiecesOnBoard();
    };
 
    UI.prototype._deselectSquares = function(){
@@ -145,29 +144,13 @@
       }
    };
 
-
-
-   UI.prototype._squareColorResolver = function(x, y){
-      if ((x+y) & 1) {
-         return UI.DARK_SQUARE_COLOR;
-      } else {
-         return UI.LIGHT_SQUARE_COLOR;
-      }
+   UI.prototype._getEl = function(id) {
+      return this._boardEl.querySelector('#' + id);
    };
-
-   UI.SQUARE_TEMPLATE = '<span></span>';
 
    UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
    UI.SQUARES_PER_RANK = 8;
-
-   UI.DARK_SQUARE_COLOR = '#B58863';
-
-   UI.LIGHT_SQUARE_COLOR = '#F0D9B5';
-
-   UI.MEN_STROKE_COLOUR = '#000';
-
-   UI.MEN_FONT = 'bold 54px Arial';
 
    UI.HUMAN_MOVE_MADE_EVENT = "humanMadeMoveEvent";
 
