@@ -20,7 +20,7 @@
     * Stores the state of the board, which pieces occupy which coords.
     * @type {{C.Piece|Object}} e.g { a1: C.Rook, a2: C.Pawn, a3: {} }
     */
-   Engine.prototype.positions = {};
+   Engine.prototype.positions = null;
 
    /**
     * @type {String} Which colour is currently permitted to move.
