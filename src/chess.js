@@ -3,7 +3,7 @@
    "use strict";
 
    /**
-    * Initialises the UI and Engine and handles communication between them.
+    * Initialises the game instance.
     * @constructor
     */
    function Chess(){
@@ -13,6 +13,10 @@
       this._initialiseEvents();
    }
 
+   /**
+    * Handles communication between classes.
+    * @private
+    */
    Chess.prototype._initialiseEvents = function(){
       this.UI.subscribe(C.UI.HUMAN_MOVE_MADE_EVENT, this.engine.makeMove, this.engine);
       this.engine.subscribe(C.Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.UI.handleMoveDeemedLegal, this.UI);
