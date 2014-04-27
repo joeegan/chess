@@ -8,7 +8,7 @@
     */
    function Chess(){
       this.engine = new C.Engine();
-      this.UI = new C.UI('chessboard', this.engine.positions);
+      this.UI = new C.UI('chessboard', this.engine.positions, false).withSwitchControl('switchcontrol');
       this.movelog = new C.MoveLog();
       this._initialiseEvents();
    }
@@ -34,6 +34,6 @@
    /**
     * Temporary! - To help with development drop in a moveLog here to reinitialise the game with a different position state.
     */
-//   C.Chess.engine.processMoveLog(["1. Pe2-e4 Pe7-e5", "2. Bf1-d3 Kb8-c6", "3. Pa2-a4 Pa7-a5", "4. Pb2-b4 Pa5xb4", "5. Pa4-a5 Kc6xa5", "6. Bd3-c4 Bf8-d6", "7. Kg1-f3 Kg8-h6", "8. Ke1-e2 Kh6-g4", "9. Ke2-d3 Pf7-f5", "10. Pe4xf5 Pe5-e4"]);
+//   C.Chess.engine.processMoveLog(["1. Pe2-e4 Pd7-d5", "2. Pe4-e5 Pd5-d4", "3. Pe5-e6 Pd4-d3", "4. Pe6xf7 Pd3xc2"]);
 
 })();

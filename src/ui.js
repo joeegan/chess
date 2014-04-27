@@ -5,12 +5,14 @@
    /**
     * @param {String} boardId
     * @param {Object} positions
+    * @param {Boolean} reversed
     * @returns {*}
     * @constructor
     */
-   function UI(boardId, positions){
+   function UI(boardId, positions, reversed){
       this._positions = positions;
       this._boardEl = document.getElementById(boardId);
+      this._boardReversed = reversed;
       this._buildCoordMapping();
       this._renderPiecesOnBoard();
       this._initialiseEvents();
@@ -18,11 +20,23 @@
    }
    UI.prototype = Object.create(Observer.prototype);
 
+   UI.prototype.withSwitchControl = function(switchControlId){
+      this._switchControl = document.getElementById(switchControlId);
+      this._switchControl.addEventListener('click', this._handleSwitchControlClick.bind(this), false);
+      return this;
+   };
+
    /**
     * Local reference of C.Engine.positions.
     * @type {{C.Piece|Object}} e.g { a1: C.Rook, a2: C.Pawn, a3: {} }
     */
    UI.prototype.positions = null;
+
+   /**
+    * Whether the board has black pieces at the bottom.
+    * @type {Boolean}
+    */
+   UI.prototype._boardReversed = null;
 
    /**
     * The coord the player intends to move to.
@@ -88,18 +102,29 @@
 
    /**
     * Builds this._coordMapping
+    * @param whiteBase White is at the bottom of the board visually
     */
    UI.prototype._buildCoordMapping = function(){
       this._coordMapping = {};
-      this._squareSize = Math.floor(this._boardEl.getAttribute('width')/UI.SQUARES_PER_RANK);
-      for (var y = 0; y < UI.SQUARES_PER_RANK; y++) {
-         for (var x = 0; x < UI.SQUARES_PER_RANK; x++) {
-            this._coordMapping[UI.ALPHABET[x] + (UI.SQUARES_PER_RANK-y)] = {
-               x: Math.floor(x*this._squareSize),
-               y: Math.floor(y*this._squareSize)
+      this._squareSize = this._boardEl.getAttribute('width')/UI.SQUARES_PER_RANK;
+      this._boardEl.className = this._boardReversed ? 'reversed' : '';
+      var alphabet = this._boardReversed ? UI.ALPHABET.slice().reverse() : UI.ALPHABET;
+      for (var rank = 0; rank < UI.SQUARES_PER_RANK; rank++) {
+            for (var file = 0; file < UI.SQUARES_PER_RANK; file++) {
+            var yMultiplier = this._boardReversed ? (UI.SQUARES_PER_RANK - (rank+1)) : rank;
+               this._coordMapping[alphabet[file] + (UI.SQUARES_PER_RANK-rank)] = {
+               x: file * this._squareSize,
+               y: yMultiplier * this._squareSize
             };
          }
       }
+   };
+
+   UI.prototype._handleSwitchControlClick = function(ev){
+      this._boardReversed = !this._boardReversed;
+      this._buildCoordMapping();
+      this._renderPiecesOnBoard();
+      this._renderMarkings();
    };
 
    /**
@@ -184,15 +209,16 @@
 
    UI.prototype._renderMarkings = function() {
       var rank, file;
+      var alphabet = this._boardReversed ? UI.ALPHABET.slice().reverse() : UI.ALPHABET;
       for (var i = 0; i < UI.SQUARES_PER_RANK; i++) {
          rank = document.createElement('span');
          rank.className = 'rank';
-         rank.innerHTML = i+1;
-         this._getEl('a' + (i+1)).appendChild(rank);
+         rank.innerHTML = this._boardReversed ? UI.SQUARES_PER_RANK - (i): i+1;
+         this._getEl(alphabet[0] + (i+1)).appendChild(rank);
          file = document.createElement('span');
          file.className = 'file';
-         file.innerHTML = UI.ALPHABET[i];
-         this._getEl(UI.ALPHABET[i] + 1).appendChild(file);
+         file.innerHTML = alphabet[i];
+         this._getEl(alphabet[i] + (this._boardReversed ? 8 : 1)).appendChild(file);
       }
    };
 

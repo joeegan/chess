@@ -9,6 +9,7 @@
    background-position:0 0, 63px 63px;
    border: 3px solid #D3BA9B;
    margin-left: 26px;
+   margin-top: 52px;
 }
 #chessboard div {
    text-align: center;
@@ -29,11 +30,27 @@
    position: absolute;
    width: 65px;
    height: 65px;
+}
+
+#chessboard .file {
+   bottom: -53px;
    left: 0;
 }
+#chessboard.reversed .file {
+   bottom: auto;
+   top: -53px;
+}
+
 #chessboard .rank {
    left: -53px;
 }
-#chessboard .file {
-   bottom: -53px;
+#chessboard.reversed .rank {
+   left: auto;
+   right: -53px;
+}
+
+#switchcontrol {
+   margin-top: 40px;
+   font-size: 40px;
+   line-height: 40px;
 }
