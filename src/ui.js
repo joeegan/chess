@@ -179,6 +179,21 @@
          var piece = this._positions[coord];
          this._place(piece.unicode, coord);
       }
+      this._renderMarkings();
+   };
+
+   UI.prototype._renderMarkings = function() {
+      var rank, file;
+      for (var i = 0; i < UI.SQUARES_PER_RANK; i++) {
+         rank = document.createElement('span');
+         rank.className = 'rank';
+         rank.innerHTML = i+1;
+         this._getEl('a' + (i+1)).appendChild(rank);
+         file = document.createElement('span');
+         file.className = 'file';
+         file.innerHTML = UI.ALPHABET[i];
+         this._getEl(UI.ALPHABET[i] + 1).appendChild(file);
+      }
    };
 
    /**
@@ -195,20 +210,17 @@
    /**
     * Place a piece on the board.
     * @param {String} unicode
-    * @param {String} coords {x: 0, y: 0}
+    * @param {String} coord a1
     * @private
     */
-   UI.prototype._place = function(unicode, coords) {
-      if (coords) {
+   UI.prototype._place = function(unicode, coord) {
+      if (coord) {
          var newEl = document.createElement('div');
-         var style = "left:" + this._coordMapping[coords].x + "px;";
-         style += "top:" + this._coordMapping[coords].y  + "px;";
-         style += "width:" + this._squareSize + "px;";
-         style += "height:" + this._squareSize + "px;";
-         style += "line-height:" + this._squareSize  + "px;";
+         var style = "left:" + this._coordMapping[coord].x + "px;";
+         style += "top:" + this._coordMapping[coord].y  + "px;";
          newEl.setAttribute('style', style);
          newEl.innerHTML = unicode || '';
-         newEl.id = coords;
+         newEl.id = coord;
          this._boardEl.appendChild(newEl);
       }
    };
