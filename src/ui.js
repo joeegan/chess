@@ -14,7 +14,7 @@
       this._boardEl = document.getElementById(boardId);
       this._boardReversed = reversed;
       this._buildCoordMapping();
-      this._renderPiecesOnBoard();
+      this._placeAllPiecesOnBoard();
       this._renderMarkings();
       this._initialiseEvents();
       return this;
@@ -72,8 +72,9 @@
     * @param {newCoord} e.g e5
     */
    UI.prototype.handleMoveDeemedLegal = function(positions, lan, turn, selectedCoord, newCoord) {
-      this._clearBoard();
-      this._renderPiecesOnBoard();
+      this._place('', selectedCoord);
+      this._place(positions[newCoord].unicode, newCoord);
+      // TODO: stop rerendering the markings every move, they will dissapear if their parent div is moved.
       this._renderMarkings();
       this._deselect();
       var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
@@ -101,7 +102,7 @@
    UI.prototype.handleMoveLogProcessed = function(positions){
       this._positions = positions;
       this._clearBoard();
-      this._renderPiecesOnBoard();
+      this._placeAllPiecesOnBoard();
       this._renderMarkings();
    };
 
@@ -128,8 +129,7 @@
    UI.prototype._handleSwitchControlClick = function(ev){
       this._boardReversed = !this._boardReversed;
       this._buildCoordMapping();
-      this._clearBoard();
-      this._renderPiecesOnBoard();
+      this._placeAllPiecesOnBoard();
       this._renderMarkings();
    };
 
@@ -203,7 +203,7 @@
     * Places the pieces in this._positions on the board.
     * @private
     */
-   UI.prototype._renderPiecesOnBoard = function() {
+   UI.prototype._placeAllPiecesOnBoard = function() {
       this._squareSize = this._boardEl.getAttribute('width')/C.Engine.SQUARES_PER_RANK;
       for (var coord in this._positions) {
          var piece = this._positions[coord];
@@ -238,14 +238,6 @@
    };
 
    /**
-    * Removes all pieces from the board.
-    * @private
-    */
-   UI.prototype._clearBoard = function(){
-      this._boardEl.innerHTML = '';
-   };
-
-   /**
     * Place a piece on the board.
     * @param {String} unicode
     * @param {String} coord a1
@@ -253,13 +245,17 @@
     */
    UI.prototype._place = function(unicode, coord) {
       if (coord) {
-         var newEl = document.createElement('div');
-         var style = "left:" + this._coordMapping[coord].x + "px;";
-         style += "top:" + this._coordMapping[coord].y  + "px;";
-         newEl.setAttribute('style', style);
-         newEl.innerHTML = unicode || '';
-         newEl.id = coord;
-         this._boardEl.appendChild(newEl);
+         if (this._getEl(coord)) {
+            this._getEl(coord).innerHTML = unicode;
+         } else {
+            var style = "left:" + this._coordMapping[coord].x + "px;";
+            style += "top:" + this._coordMapping[coord].y  + "px;";
+            var newEl = document.createElement('div');
+            newEl.setAttribute('style', style);
+            newEl.innerHTML = unicode || '';
+            newEl.id = coord;
+            this._boardEl.appendChild(newEl);
+         }
       }
    };
 
