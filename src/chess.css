@@ -36,17 +36,9 @@
    bottom: -53px;
    left: 0;
 }
-#chessboard.reversed .file {
-   bottom: auto;
-   top: -53px;
-}
 
 #chessboard .rank {
    left: -53px;
-}
-#chessboard.reversed .rank {
-   left: auto;
-   right: -53px;
 }
 
 #switchcontrol {

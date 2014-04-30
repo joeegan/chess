@@ -122,6 +122,7 @@
 
    UI.prototype._handleSwitchControlClick = function(ev){
       this._boardReversed = !this._boardReversed;
+      this._clearBoard();
       this._buildCoordMapping();
       this._renderPiecesOnBoard();
       this._renderMarkings();
@@ -207,6 +208,10 @@
       this._renderMarkings();
    };
 
+   /**
+    * Renders the file, 'a','b','c' and rank '1','2','3' markings on the board.
+    * @private
+    */
    UI.prototype._renderMarkings = function() {
       var rank, file;
       var alphabet = this._boardReversed ? UI.ALPHABET.slice().reverse() : UI.ALPHABET;
@@ -214,11 +219,16 @@
          rank = document.createElement('span');
          rank.className = 'rank';
          rank.innerHTML = this._boardReversed ? UI.SQUARES_PER_RANK - (i): i+1;
-         this._getEl(alphabet[0] + (i+1)).appendChild(rank);
          file = document.createElement('span');
          file.className = 'file';
-         file.innerHTML = alphabet[i];
-         this._getEl(alphabet[i] + (this._boardReversed ? 8 : 1)).appendChild(file);
+         file.innerHTML = UI.ALPHABET[i];
+         if (!this._boardReversed) {
+            this._getEl(alphabet[0] + (i+1)).appendChild(rank);
+            this._getEl(alphabet[i] + 1).appendChild(file);
+         } else {
+            this._getEl(alphabet[7] + (i+1)).appendChild(rank);
+            this._getEl(alphabet[i] + 1).appendChild(file);
+         }
       }
    };
 
