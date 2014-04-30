@@ -15,6 +15,7 @@
       this._boardReversed = reversed;
       this._buildCoordMapping();
       this._renderPiecesOnBoard();
+      this._renderMarkings();
       this._initialiseEvents();
       return this;
    }
@@ -71,7 +72,9 @@
     * @param {newCoord} e.g e5
     */
    UI.prototype.handleMoveDeemedLegal = function(positions, lan, turn, selectedCoord, newCoord) {
+      this._clearBoard();
       this._renderPiecesOnBoard();
+      this._renderMarkings();
       this._deselect();
       var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
       divs.forEach(function(div) {
@@ -97,7 +100,9 @@
     */
    UI.prototype.handleMoveLogProcessed = function(positions){
       this._positions = positions;
+      this._clearBoard();
       this._renderPiecesOnBoard();
+      this._renderMarkings();
    };
 
    /**
@@ -122,8 +127,8 @@
 
    UI.prototype._handleSwitchControlClick = function(ev){
       this._boardReversed = !this._boardReversed;
-      this._clearBoard();
       this._buildCoordMapping();
+      this._clearBoard();
       this._renderPiecesOnBoard();
       this._renderMarkings();
    };
@@ -199,13 +204,14 @@
     * @private
     */
    UI.prototype._renderPiecesOnBoard = function() {
-      this._clearBoard();
       this._squareSize = this._boardEl.getAttribute('width')/C.Engine.SQUARES_PER_RANK;
       for (var coord in this._positions) {
          var piece = this._positions[coord];
          this._place(piece.unicode, coord);
       }
-      this._renderMarkings();
+      if (this._selectedCoord) {
+         this._getEl(this._selectedCoord).className = 'selected';
+      }
    };
 
    /**
@@ -214,20 +220,19 @@
     */
    UI.prototype._renderMarkings = function() {
       var rank, file;
-      var alphabet = this._boardReversed ? UI.ALPHABET.slice().reverse() : UI.ALPHABET;
       for (var i = 0; i < UI.SQUARES_PER_RANK; i++) {
          rank = document.createElement('span');
          rank.className = 'rank';
-         rank.innerHTML = this._boardReversed ? UI.SQUARES_PER_RANK - (i): i+1;
+         rank.innerHTML = (i+1)+'';
          file = document.createElement('span');
          file.className = 'file';
          file.innerHTML = UI.ALPHABET[i];
-         if (!this._boardReversed) {
-            this._getEl(alphabet[0] + (i+1)).appendChild(rank);
-            this._getEl(alphabet[i] + 1).appendChild(file);
+         if (this._boardReversed) {
+            this._getEl(UI.ALPHABET[UI.SQUARES_PER_RANK - 1] + (i+1)).appendChild(rank);
+            this._getEl(UI.ALPHABET[i] + UI.SQUARES_PER_RANK).appendChild(file);
          } else {
-            this._getEl(alphabet[7] + (i+1)).appendChild(rank);
-            this._getEl(alphabet[i] + 1).appendChild(file);
+            this._getEl(UI.ALPHABET[0] + (i+1)).appendChild(rank);
+            this._getEl(UI.ALPHABET[i] + 1).appendChild(file);
          }
       }
    };
@@ -237,10 +242,7 @@
     * @private
     */
    UI.prototype._clearBoard = function(){
-      var divs = Array.prototype.slice.call(this._boardEl.children);
-      for (var i = 0; i < divs.length; i++) {
-         divs[i].innerHTML = '';
-      }
+      this._boardEl.innerHTML = '';
    };
 
    /**
