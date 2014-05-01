@@ -74,8 +74,6 @@
    UI.prototype.handleMoveDeemedLegal = function(positions, lan, turn, selectedCoord, newCoord) {
       this._place('', selectedCoord);
       this._place(positions[newCoord].unicode, newCoord);
-      // TODO: stop rerendering the markings every move, they will dissapear if their parent div is moved.
-      this._renderMarkings();
       this._deselect();
       var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
       divs.forEach(function(div) {
@@ -108,16 +106,16 @@
 
    /**
     * Builds this._coordMapping
-    * @param whiteBase White is at the bottom of the board visually
     */
    UI.prototype._buildCoordMapping = function(){
+      var rank, file, yMultiplier;
+      var alphabet = this._boardReversed ? UI.ALPHABET.slice().reverse() : UI.ALPHABET;
       this._coordMapping = {};
       this._squareSize = this._boardEl.getAttribute('width')/UI.SQUARES_PER_RANK;
       this._boardEl.className = this._boardReversed ? 'reversed' : '';
-      var alphabet = this._boardReversed ? UI.ALPHABET.slice().reverse() : UI.ALPHABET;
-      for (var rank = 0; rank < UI.SQUARES_PER_RANK; rank++) {
-            for (var file = 0; file < UI.SQUARES_PER_RANK; file++) {
-            var yMultiplier = this._boardReversed ? (UI.SQUARES_PER_RANK - (rank+1)) : rank;
+      for (rank = 0; rank < UI.SQUARES_PER_RANK; rank++) {
+            for (file = 0; file < UI.SQUARES_PER_RANK; file++) {
+               yMultiplier = this._boardReversed ? (UI.SQUARES_PER_RANK - (rank+1)) : rank;
                this._coordMapping[alphabet[file] + (UI.SQUARES_PER_RANK-rank)] = {
                x: file * this._squareSize,
                y: yMultiplier * this._squareSize
@@ -126,6 +124,11 @@
       }
    };
 
+   /**
+    * Handles the Switch control being clicked to reverse the view.
+    * @param {Object} ev DOM event
+    * @private
+    */
    UI.prototype._handleSwitchControlClick = function(ev){
       this._boardReversed = !this._boardReversed;
       this._buildCoordMapping();
@@ -136,6 +139,7 @@
    /**
     * TODO - This was originally written for canvas, rewrite without the _withinSquare shenanigans.
     * @param {Object} ev DOM event
+    * @private
     */
    UI.prototype._handleBoardClick = function(ev){
       var mouseX = ev.pageX - this._boardEl.offsetLeft,
@@ -207,7 +211,7 @@
       this._squareSize = this._boardEl.getAttribute('width')/C.Engine.SQUARES_PER_RANK;
       for (var coord in this._positions) {
          var piece = this._positions[coord];
-         this._place(piece.unicode, coord);
+         this._place(piece.unicode || '', coord);
       }
       if (this._selectedCoord) {
          this._getEl(this._selectedCoord).className = 'selected';
@@ -219,20 +223,36 @@
     * @private
     */
    UI.prototype._renderMarkings = function() {
-      var rank, file;
+      var rank, file, rankCoordRef, fileCoordRef, fileStyle, rankStyle;
+      var markingsRendered = !!this._getEl('rank0');
       for (var i = 0; i < UI.SQUARES_PER_RANK; i++) {
-         rank = document.createElement('span');
-         rank.className = 'rank';
+         if (markingsRendered) {
+            rank = this._getEl('rank'+i);
+            file = this._getEl('file'+UI.ALPHABET[i]);
+         } else {
+            rank = document.createElement('span');
+            file = rank.cloneNode();
+            rank.className = 'rank';
+            rank.setAttribute('id', 'rank'+i);
+            file.className = 'file';
+            file.setAttribute('id', 'file'+UI.ALPHABET[i]);
+         }
          rank.innerHTML = (i+1)+'';
-         file = document.createElement('span');
-         file.className = 'file';
          file.innerHTML = UI.ALPHABET[i];
          if (this._boardReversed) {
-            this._getEl(UI.ALPHABET[UI.SQUARES_PER_RANK - 1] + (i+1)).appendChild(rank);
-            this._getEl(UI.ALPHABET[i] + UI.SQUARES_PER_RANK).appendChild(file);
+            rankCoordRef = this._coordMapping[UI.ALPHABET[UI.SQUARES_PER_RANK - 1] + (i+1)];
+            fileCoordRef = this._coordMapping[UI.ALPHABET[i] + UI.SQUARES_PER_RANK];
          } else {
-            this._getEl(UI.ALPHABET[0] + (i+1)).appendChild(rank);
-            this._getEl(UI.ALPHABET[i] + 1).appendChild(file);
+            rankCoordRef = this._coordMapping[UI.ALPHABET[0] + (i+1)];
+            fileCoordRef = this._coordMapping[UI.ALPHABET[i] + 1];
+         }
+         fileStyle = "left:" + fileCoordRef.x + "px;";
+         rankStyle = "top:" + rankCoordRef.y  + "px;";
+         file.setAttribute('style', fileStyle);
+         rank.setAttribute('style', rankStyle);
+         if (!markingsRendered) {
+            this._boardEl.appendChild(rank);
+            this._boardEl.appendChild(file);
          }
       }
    };
@@ -244,9 +264,15 @@
     * @private
     */
    UI.prototype._place = function(unicode, coord) {
+      var el;
       if (coord) {
+         // TODO move to alternative _move function
          if (this._getEl(coord)) {
-            this._getEl(coord).innerHTML = unicode;
+            el = this._getEl(coord);
+            el.innerHTML = unicode || '';
+            var style = "left:" + this._coordMapping[coord].x + "px;";
+            style += "top:" + this._coordMapping[coord].y  + "px;";
+            el.setAttribute('style', style);
          } else {
             var style = "left:" + this._coordMapping[coord].x + "px;";
             style += "top:" + this._coordMapping[coord].y  + "px;";
@@ -275,12 +301,12 @@
    UI.ALPHABET = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
    /**
-    * @type {number}
+    * @type {Number}
     */
    UI.SQUARES_PER_RANK = 8;
 
    /**
-    * @type {string}
+    * @type {String}
     */
    UI.HUMAN_MOVE_MADE_EVENT = "humanMadeMoveEvent";
 

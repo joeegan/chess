@@ -30,15 +30,16 @@
    position: absolute;
    width: 65px;
    height: 65px;
+   text-align: center;
 }
 
 #chessboard .file {
-   bottom: -53px;
-   left: 0;
+   bottom: -76px;
 }
 
 #chessboard .rank {
-   left: -53px;
+   left: -54px;
+   padding-top: 20px;
 }
 
 #switchcontrol {
