@@ -14,7 +14,7 @@
       this._boardEl = document.getElementById(boardId);
       this._boardReversed = reversed;
       this._buildCoordMapping();
-      this._placeAllPiecesOnBoard();
+      this._placePieces();
       this._renderMarkings();
       this._initialiseEvents();
       return this;
@@ -72,15 +72,11 @@
     * @param {newCoord} e.g e5
     */
    UI.prototype.handleMoveDeemedLegal = function(positions, lan, turn, selectedCoord, newCoord) {
-      this._place('', selectedCoord);
-      this._place(positions[newCoord].unicode, newCoord);
+      this._positions = positions;
+      this._move(selectedCoord, newCoord);
       this._deselect();
-      var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
-      divs.forEach(function(div) {
-         div.className = '';
-      });
-      this._getEl(selectedCoord).className = 'selected';
-      this._getEl(newCoord).className = 'selected';
+
+
    };
 
    /**
@@ -99,13 +95,12 @@
     */
    UI.prototype.handleMoveLogProcessed = function(positions){
       this._positions = positions;
-      this._clearBoard();
-      this._placeAllPiecesOnBoard();
-      this._renderMarkings();
+      this._repositionCoords();
    };
 
    /**
-    * Builds this._coordMapping
+    * Builds the mapping that determines the position of the squares (coords).
+    * @private
     */
    UI.prototype._buildCoordMapping = function(){
       var rank, file, yMultiplier;
@@ -132,8 +127,8 @@
    UI.prototype._handleSwitchControlClick = function(ev){
       this._boardReversed = !this._boardReversed;
       this._buildCoordMapping();
-      this._placeAllPiecesOnBoard();
-      this._renderMarkings();
+      this._repositionCoords();
+      this._moveMarkings();
    };
 
    /**
@@ -207,15 +202,57 @@
     * Places the pieces in this._positions on the board.
     * @private
     */
-   UI.prototype._placeAllPiecesOnBoard = function() {
-      this._squareSize = this._boardEl.getAttribute('width')/C.Engine.SQUARES_PER_RANK;
+   UI.prototype._placePieces = function() {
       for (var coord in this._positions) {
          var piece = this._positions[coord];
          this._place(piece.unicode || '', coord);
       }
+      this._highlightSelected();
+   };
+
+   /**
+    * @private
+    */
+   UI.prototype._repositionCoords = function() {
+      for (var coord in this._positions) {
+         this._reposition(coord);
+      }
+      this._highlightSelected();
+   };
+
+   /**
+    * Move a unicode chess piece to another coord on the board.
+    * @param selectedCoord
+    * @param newCoord
+    * @private
+    */
+   UI.prototype._move = function(selectedCoord, newCoord){
+      this._unhighlight();
+      this._getEl(selectedCoord).innerHTML = '';
+      this._getEl(newCoord).innerHTML = this._positions[newCoord].unicode;
+      this._getEl(selectedCoord).className = 'selected';
+      this._getEl(newCoord).className = 'selected';
+   };
+
+   /**
+    * Highlights the selected coord.
+    * @private
+    */
+   UI.prototype._highlightSelected = function(){
       if (this._selectedCoord) {
          this._getEl(this._selectedCoord).className = 'selected';
       }
+   };
+
+   /**
+    * Removes the highlighting from all coords.
+    * @private
+    */
+   UI.prototype._unhighlight = function(){
+      var divs = Array.prototype.slice.call(document.getElementsByClassName('selected'));
+      divs.forEach(function(div) {
+         div.className = '';
+      });
    };
 
    /**
@@ -223,66 +260,89 @@
     * @private
     */
    UI.prototype._renderMarkings = function() {
-      var rank, file, rankCoordRef, fileCoordRef, fileStyle, rankStyle;
-      var markingsRendered = !!this._getEl('rank0');
+      var rank, file;
       for (var i = 0; i < UI.SQUARES_PER_RANK; i++) {
-         if (markingsRendered) {
-            rank = this._getEl('rank'+i);
-            file = this._getEl('file'+UI.ALPHABET[i]);
-         } else {
-            rank = document.createElement('span');
-            file = rank.cloneNode();
-            rank.className = 'rank';
-            rank.setAttribute('id', 'rank'+i);
-            file.className = 'file';
-            file.setAttribute('id', 'file'+UI.ALPHABET[i]);
-         }
-         rank.innerHTML = (i+1)+'';
+
+         rank = document.createElement('span');
+         rank.className = 'rank';
+         rank.id = 'rank' + i;
+         rank.innerHTML = (i + 1) + '';
+
+         file = document.createElement('span');
+         file.className = 'file';
+         file.id = 'file' + UI.ALPHABET[i];
          file.innerHTML = UI.ALPHABET[i];
-         if (this._boardReversed) {
-            rankCoordRef = this._coordMapping[UI.ALPHABET[UI.SQUARES_PER_RANK - 1] + (i+1)];
-            fileCoordRef = this._coordMapping[UI.ALPHABET[i] + UI.SQUARES_PER_RANK];
-         } else {
-            rankCoordRef = this._coordMapping[UI.ALPHABET[0] + (i+1)];
-            fileCoordRef = this._coordMapping[UI.ALPHABET[i] + 1];
-         }
-         fileStyle = "left:" + fileCoordRef.x + "px;";
-         rankStyle = "top:" + rankCoordRef.y  + "px;";
-         file.setAttribute('style', fileStyle);
-         rank.setAttribute('style', rankStyle);
-         if (!markingsRendered) {
-            this._boardEl.appendChild(rank);
-            this._boardEl.appendChild(file);
-         }
+
+         this._setMarkingsStyle(i, rank, file);
+         this._boardEl.appendChild(rank);
+         this._boardEl.appendChild(file);
       }
    };
 
    /**
-    * Place a piece on the board.
+    * @private
+    */
+   UI.prototype._moveMarkings = function() {
+      var rank, file;
+      for (var i = 0; i < UI.SQUARES_PER_RANK; i++) {
+         rank = this._getEl('rank'+i);
+         file = this._getEl('file'+UI.ALPHABET[i]);
+         this._setMarkingsStyle(i, rank, file);
+      }
+   };
+
+   /**
+    * Styles the markings elements.
+    * @param {Number} i
+    * @param {HTMLElement} rank
+    * @param {HTMLElement} file
+    * @private
+    */
+   UI.prototype._setMarkingsStyle = function(i, rank, file){
+      var x, y;
+      if (this._boardReversed) {
+         x = this._coordMapping[UI.ALPHABET[i] + 8].x;
+         y = this._coordMapping['h' + (i+1)].y;
+      } else {
+         x = this._coordMapping[UI.ALPHABET[i] + 1].x;
+         y = this._coordMapping['a' + (i+1)].y;
+      }
+      file.style.left = x + 'px';
+      rank.style.top = y + 'px';
+   };
+
+   /**
+    * Create a coord element and place it on the board.
     * @param {String} unicode
     * @param {String} coord a1
     * @private
     */
    UI.prototype._place = function(unicode, coord) {
-      var el;
-      if (coord) {
-         // TODO move to alternative _move function
-         if (this._getEl(coord)) {
-            el = this._getEl(coord);
-            el.innerHTML = unicode || '';
-            var style = "left:" + this._coordMapping[coord].x + "px;";
-            style += "top:" + this._coordMapping[coord].y  + "px;";
-            el.setAttribute('style', style);
-         } else {
-            var style = "left:" + this._coordMapping[coord].x + "px;";
-            style += "top:" + this._coordMapping[coord].y  + "px;";
-            var newEl = document.createElement('div');
-            newEl.setAttribute('style', style);
-            newEl.innerHTML = unicode || '';
-            newEl.id = coord;
-            this._boardEl.appendChild(newEl);
-         }
-      }
+      var newEl = document.createElement('div');
+      this._setPosStyleForCoord(coord, newEl);
+      newEl.innerHTML = unicode || '';
+      newEl.id = coord;
+      this._boardEl.appendChild(newEl);
+   };
+
+   /**
+    * Sets new style properties on the coord based on this._coordMapping.
+    * @param coord
+    * @private
+    */
+   UI.prototype._reposition = function(coord) {
+      var el = this._getEl(coord);
+      this._setPosStyleForCoord(coord, el);
+   };
+
+   /**
+    * @param coord
+    * @returns {string}
+    * @private
+    */
+   UI.prototype._setPosStyleForCoord = function(coord, el) {
+      el.style.left = this._coordMapping[coord].x + 'px';
+      el.style.top = this._coordMapping[coord].y + 'px';
    };
 
    /**
