@@ -11,6 +11,10 @@
    margin-left: 26px;
    margin-top: 52px;
 }
+#chessboard div, #chessboard span {
+   -webkit-user-select: none;
+   user-select: none;
+}
 #chessboard div {
    text-align: center;
    position: absolute;
@@ -21,6 +25,8 @@
    width: 63px;
    height: 63px;
    line-height: 63px;
+   -webkit-user-select: none;
+   user-select: none;
 }
 #chessboard div.selected {
    background: #8AA3C9;
