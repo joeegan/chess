@@ -17,6 +17,7 @@
       this._placePieces();
       this._renderMarkings();
       this._initialiseEvents();
+      this._debug = true;
       return this;
    }
    UI.prototype = Object.create(Observer.prototype);
@@ -25,6 +26,17 @@
       this._switchControl = document.getElementById(switchControlId);
       this._switchControl.addEventListener('click', this._handleSwitchControlClick.bind(this), false);
       return this;
+   };
+
+   /**
+    * Temporary console.log wrapper to control logging.
+    * @param data
+    * @private
+    */
+   UI.prototype._log = function(data){
+      if (this._debug) {
+         console.log(data);
+      }
    };
 
    /**
@@ -76,7 +88,6 @@
       this._move(selectedCoord, newCoord);
       this._deselect();
 
-
    };
 
    /**
@@ -96,6 +107,13 @@
    UI.prototype.handleMoveLogProcessed = function(positions){
       this._positions = positions;
       this._repositionCoords();
+   };
+
+   /**
+    * TODO
+    */
+   UI.prototype.handleCheck = function(){
+      this._log('in check');
    };
 
    /**
@@ -146,13 +164,13 @@
          if (this._withinSquare(mouseX, mouseY, squareXY)) {
             var isPiece = this._positions[squareName] instanceof C.Piece;
             if (!isPiece && !this._selectedCoord) {
-               console.log('empty ' + squareName + ' clicked, no piece selected')
+               this._log('empty ' + squareName + ' clicked, no piece selected')
                this._deselect();
             } else if (this._selectedCoord && squareName === this._selectedCoord) {
-               console.log('same square clicked twice', squareName);
+               this._log('same square clicked twice', squareName);
                this._deselect();
             } else if (isPiece && !this._selectedCoord) {
-               console.log(pieceName, squareName, 'selected');
+               this._log(pieceName, squareName, 'selected');
                this._selectedCoord = squareName;
                this._getEl(this._selectedCoord).className = 'selected';
             } else if (!isPiece && this._selectedCoord || isPiece && this._selectedCoord) {
@@ -182,7 +200,7 @@
     * @private
     */
    UI.prototype._deselect = function(){
-      console.log('unselecting square', this._selectedCoord);
+      this._log('unselecting square', this._selectedCoord);
       this._selectedCoord = null;
    };
 

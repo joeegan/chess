@@ -13,6 +13,7 @@
     */
    function Engine(){
       this.buildPositions();
+      this._debug = true;
    }
    Engine.prototype = Object.create(Observer.prototype);
 
@@ -28,6 +29,17 @@
    Engine.prototype.turn = 'white';
 
    /**
+    * Temporary console.log wrapper to control logging.
+    * @param data
+    * @private
+    */
+   Engine.prototype._log = function(data){
+      if (this._debug) {
+         console.log(data);
+      }
+   };
+
+   /**
     * @param lan e.g. 'Pa2-a3'
     */
    Engine.prototype.makeMove = function(lan) {
@@ -36,13 +48,39 @@
       if (this.checkLegal(selectedCoord, newCoord)) {
          this.place(selectedCoord, newCoord);
          this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, lan, this.turn, selectedCoord, newCoord);
+         if (this.checkCheckmate()) {
+            this.publish(Engine.CHECKMATE_EVENT);
+         } else if (this.checkCheck()){
+            this.publish(Engine.CHECK_EVENT);
+         }
          this.changeTurn(this.positions[newCoord].colour);
       } else {
          this.publish(Engine.HUMAN_MOVE_DEEMED_ILLEGAL_EVENT, this.positions, selectedCoord, newCoord);
       }
    };
 
-   /**
+   Engine.prototype.checkCheck = function() {
+      var kingUnderThreatCoord, piece;
+      var colourUnderThreat = this.turn == 'white' ? 'black' : 'white';
+      for (var coord in this.positions) {
+         piece = this.positions[coord];
+         if (piece instanceof C.King && piece.colour == colourUnderThreat) {
+            kingUnderThreatCoord = coord;
+         }
+      }
+      for (var coord in this.positions) {
+         if (this.checkLegal(coord, kingUnderThreatCoord)) {
+            return true;
+         }
+      }
+      return false;
+   };
+
+   Engine.prototype.checkCheckmate = function() {
+      return false;
+   };
+
+      /**
     * @param {String} selectedCoord e.g. e2
     * @param {String} newCoord e.g. e5
     * @returns {boolean} Whether the rules of chess permit the attempted move.
@@ -67,7 +105,7 @@
     */
    Engine.prototype.tookOwnPiece = function(selectedColour, newColour) {
       if (selectedColour == newColour) {
-         console.log('can\'t take own piece');
+         this._log('can\'t take own piece');
          return true;
       }
       return false;
@@ -80,7 +118,7 @@
     */
    Engine.prototype.tookConsecutiveTurns = function(selectedColour){
       if (selectedColour != this.turn) {
-         console.log('it is not ' + selectedColour + '\'s turn');
+         // this._log('it is not ' + selectedColour + '\'s turn');
          return true;
       }
       return false;
@@ -135,17 +173,22 @@
    Engine.prototype.processMoveLog = function(moveLog) {
       var selectedCoord,
           newCoord,
-          movePair;
+          movePair,
+          firstMove,
+          secondMove;
       for (var i = 0; i < moveLog.length; i++) {
          movePair = moveLog[i];
-         selectedCoord = movePair.split(' ')[1].slice(1,3);
-         newCoord = movePair.split(' ')[1].slice(4,6);
+         firstMove = movePair.split(' ')[1];
+         selectedCoord = firstMove.slice(1,3);
+         newCoord = firstMove.slice(4,6);
          this.place(selectedCoord, newCoord);
+         this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, firstMove, this.turn, selectedCoord, newCoord);
          this.changeTurn('white');
-         if (movePair.split(' ')[2]) {
-            selectedCoord = movePair.split(' ')[2].slice(1,3);
-            newCoord = movePair.split(' ')[2].slice(4,6);
+         if (secondMove = movePair.split(' ')[2]) {
+            selectedCoord = secondMove.slice(1,3);
+            newCoord = secondMove.slice(4,6);
             this.place(selectedCoord, newCoord);
+            this.publish(Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT, this.positions, secondMove, this.turn, selectedCoord, newCoord);
             this.changeTurn('black');
          }
       }
@@ -156,6 +199,11 @@
     * @type {string}
     */
    Engine.HUMAN_MOVE_DEEMED_LEGAL_EVENT = "humanMoveDeemedLegalEvent";
+
+   /**
+    * @type {string}
+    */
+   Engine.CHECK_EVENT = "checkEvent";
 
    /**
     * @type {string}
